@@ -1,6 +1,6 @@
-# Radar prospects boissons — 06 & 83 · V4
+# Radar prospects boissons — 06, 83 & Monaco · V4.1
 
-Radar Streamlit centré sur les projets avant ouverture et l'arbitrage de nouvelles gammes selon la demande potentielle, la marge probable, l'effort de référencement et le risque de stock.
+Radar Streamlit couvrant les projets avant ouverture dans les Alpes-Maritimes, le Var et Monaco, avec suivi territorial et arbitrage des nouvelles gammes.
 
 ## Fonctionnalités
 
@@ -11,6 +11,7 @@ Radar Streamlit centré sur les projets avant ouverture et l'arbitrage de nouvel
 - bibliothèque de sources et de requêtes de veille ;
 - correspondance entre concepts détectés et familles du catalogue.
 - matrice modifiable des opportunités produits et export de l'arbitrage ;
+- suivi de la couverture commune par commune dans le 06, le 83 et à Monaco ;
 
 Le jeu initial contient uniquement des établissements réels accompagnés d'une source publique. Les projets dont l'ouverture ou l'activité actuelle n'a pas été confirmée sont explicitement marqués à revalider.
 

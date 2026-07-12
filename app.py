@@ -10,7 +10,8 @@ import streamlit as st
 ROOT = Path(__file__).parent
 DATA_FILE = ROOT / "data" / "prospects.csv"
 PRODUCT_FILE = ROOT / "data" / "opportunites_produits.csv"
-DATA_VERSION = "4.0.0"
+TERRITORY_FILE = ROOT / "data" / "territoires.csv"
+DATA_VERSION = "4.1.0"
 
 STAGES = ["Projet annoncé", "Autorisation", "Travaux", "Recrutement", "Préouverture", "Ouvert", "Reprise", "À vérifier"]
 HORIZONS = ["A — moins de 3 mois", "B — 3 à 6 mois", "C — plus de 6 mois", "D — date inconnue", "E — ouvert récemment", "R — reprise / transformation"]
@@ -52,6 +53,9 @@ def load_prospects() -> pd.DataFrame:
 def load_product_opportunities() -> pd.DataFrame:
     return pd.read_csv(PRODUCT_FILE)
 
+def load_territories() -> pd.DataFrame:
+    return pd.read_csv(TERRITORY_FILE, dtype={"territoire": str})
+
 
 def prepare(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
@@ -66,17 +70,19 @@ def prepare(df: pd.DataFrame) -> pd.DataFrame:
 if st.session_state.get("data_version") != DATA_VERSION:
     st.session_state.prospects = prepare(load_prospects())
     st.session_state.product_opportunities = load_product_opportunities()
+    st.session_state.territories = load_territories()
     st.session_state.data_version = DATA_VERSION
 
 df = st.session_state.prospects
 products_df = st.session_state.product_opportunities
+territories_df = st.session_state.territories
 
 st.title("Radar prospects boissons · 06 & 83")
 st.caption("Détecter les ouvertures, reprises et nouveaux concepts avant leur présence dans les annuaires classiques.")
 
 with st.sidebar:
     st.header("Filtres")
-    departments = st.multiselect("Département", ["06", "83"], default=["06", "83"])
+    departments = st.multiselect("Territoire", ["06", "83", "MC"], default=["06", "83", "MC"])
     selected_stages = st.multiselect("Stade", STAGES, default=[s for s in STAGES if s != "Ouvert"])
     selected_horizons = st.multiselect("Horizon", HORIZONS, default=HORIZONS)
     min_confidence = st.slider("Confiance minimale", 0, 100, 40, 5)
@@ -94,8 +100,8 @@ if search:
     mask = filtered.astype(str).apply(lambda col: col.str.contains(search, case=False, na=False)).any(axis=1)
     filtered = filtered[mask]
 
-tab_dashboard, tab_radar, tab_products, tab_archive, tab_import, tab_sources, tab_catalogue = st.tabs(
-    ["Avant ouverture", "Projets", "Opportunités produits", "Ouverts / archive", "Importer / ajouter", "Sources & requêtes", "Tendances & catalogue"]
+tab_dashboard, tab_radar, tab_coverage, tab_products, tab_archive, tab_import, tab_sources, tab_catalogue = st.tabs(
+    ["Avant ouverture", "Projets", "Couverture territoriale", "Opportunités produits", "Ouverts / archive", "Importer / ajouter", "Sources & requêtes", "Tendances & catalogue"]
 )
 
 with tab_dashboard:
@@ -181,6 +187,23 @@ with tab_products:
         st.code("(Demande × Marge probable × Mutualisation) / (Effort de référencement × Risque de stock)")
         st.write("Cet indice compare les gammes entre elles. Ce n'est ni un taux de marge ni un chiffre d'affaires prévisionnel.")
 
+with tab_coverage:
+    st.subheader("Couverture géographique · 06, 83 et Monaco")
+    st.caption("Une commune sans résultat n'est considérée comme couverte que si une recherche structurée y a réellement été exécutée.")
+    cov = territories_df[territories_df["territoire"].isin(departments)].copy()
+    observed = df.groupby(["departement", "commune"]).size().rename("prospects_detectes").reset_index()
+    cov = cov.merge(observed, how="left", left_on=["territoire", "commune"], right_on=["departement", "commune"])
+    cov["prospects_detectes"] = cov["prospects_detectes"].fillna(0).astype(int)
+    k1, k2, k3 = st.columns(3)
+    k1.metric("Zones suivies", len(cov))
+    k2.metric("Couverture complète", int((cov["statut_couverture"] == "Complète").sum()))
+    k3.metric("À balayer", int((cov["statut_couverture"] == "Non balayée").sum()))
+    st.dataframe(
+        cov[["territoire", "bassin", "commune", "priorite", "statut_couverture", "derniere_recherche", "prospects_detectes", "notes"]],
+        use_container_width=True, hide_index=True,
+    )
+    st.download_button("Télécharger la couverture", cov.to_csv(index=False).encode("utf-8-sig"), "couverture_06_83_monaco.csv", "text/csv")
+
 with tab_archive:
     st.subheader("Établissements déjà ouverts")
     st.caption("Ces lignes sont conservées pour mémoire mais ne figurent plus dans les priorités commerciales.")
@@ -218,7 +241,7 @@ with tab_import:
         a, b, c = st.columns(3)
         name = a.text_input("Établissement / projet *")
         city = b.text_input("Commune *")
-        department = c.selectbox("Département", ["06", "83"])
+        department = c.selectbox("Territoire", ["06", "83", "MC"])
         concept = a.text_input("Type de concept", placeholder="Boutique-hôtel, beach club…")
         niche = b.text_input("Niche", placeholder="Hôtellerie lifestyle")
         stage = c.selectbox("Stade", STAGES)
