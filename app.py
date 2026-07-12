@@ -20,9 +20,24 @@ st.markdown(
     """
     <style>
     .block-container {padding-top: 1.5rem; padding-bottom: 3rem;}
-    [data-testid="stMetric"] {background:#f6f8f7;border:1px solid #e4e9e6;padding:14px;border-radius:12px;}
-    .signal {background:#eef7f2;border-left:5px solid #147a4b;padding:12px 16px;border-radius:8px;margin-bottom:10px;}
-    .muted {color:#5f6b66;font-size:.9rem;}
+    [data-testid="stMetric"] {
+        background:rgba(127,127,127,.10);
+        border:1px solid rgba(127,127,127,.28);
+        padding:14px;
+        border-radius:12px;
+    }
+    [data-testid="stMetric"] * {color:inherit !important;}
+    .signal {
+        background:rgba(20,122,75,.14);
+        border:1px solid rgba(20,122,75,.35);
+        border-left:5px solid #2da66a;
+        color:inherit;
+        padding:12px 16px;
+        border-radius:8px;
+        margin-bottom:10px;
+    }
+    .signal b {color:inherit;}
+    .muted {color:inherit;opacity:.78;font-size:.9rem;}
     </style>
     """,
     unsafe_allow_html=True,
@@ -111,7 +126,9 @@ with tab_radar:
         "etablissement", "commune", "departement", "type_concept", "niche", "stade", "horizon",
         "date_ouverture_estimee", "signal", "familles_produits", "indice_confiance", "source_url", "statut_donnee"
     ]
-    shown = filtered[display_columns].sort_values(["indice_confiance", "date_publication"], ascending=[False, False])
+    shown = filtered.sort_values(
+        ["indice_confiance", "date_publication"], ascending=[False, False]
+    )[display_columns]
     st.dataframe(
         shown,
         use_container_width=True,
@@ -135,15 +152,18 @@ with tab_import:
     template = df.head(0).to_csv(index=False).encode("utf-8-sig")
     st.download_button("Télécharger le modèle CSV", template, "modele_import_prospects.csv", "text/csv")
     uploaded = st.file_uploader("Importer un CSV", type=["csv"])
-    if uploaded is not None:
+    import_clicked = st.button("Ajouter le fichier au radar", disabled=uploaded is None)
+    if uploaded is not None and import_clicked:
         try:
             incoming = prepare(pd.read_csv(uploaded, dtype={"departement": str}))
             missing = set(df.columns) - set(incoming.columns)
             if missing:
                 st.error("Colonnes manquantes : " + ", ".join(sorted(missing)))
             else:
-                st.session_state.prospects = pd.concat([df, incoming[df.columns]], ignore_index=True)
-                st.success(f"{len(incoming)} ligne(s) ajoutée(s). Rechargez la page pour actualiser les filtres.")
+                st.session_state.prospects = prepare(
+                    pd.concat([df, incoming[df.columns]], ignore_index=True)
+                )
+                st.success(f"{len(incoming)} ligne(s) ajoutée(s).")
         except Exception as exc:
             st.error(f"Import impossible : {exc}")
 
