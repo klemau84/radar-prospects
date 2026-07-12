@@ -8,10 +8,10 @@ import streamlit as st
 
 
 ROOT = Path(__file__).parent
-DATA_FILE = ROOT / "data" / "prospects.csv"
+DATA_FILE = ROOT / "data" / "prospects_demo.csv"
 
 STAGES = ["Projet annoncé", "Autorisation", "Travaux", "Recrutement", "Préouverture", "Ouvert", "Reprise", "À vérifier"]
-HORIZONS = ["A — moins de 3 mois", "B — 3 à 6 mois", "C — plus de 6 mois", "D — date inconnue", "E — ouvert récemment", "R — reprise / transformation"]
+HORIZONS = ["A — moins de 3 mois", "B — 3 à 6 mois", "C — plus de 6 mois", "D — date inconnue", "R — reprise / transformation"]
 
 
 st.set_page_config(page_title="Radar CHR 06/83", page_icon="📡", layout="wide")
@@ -75,7 +75,7 @@ with st.sidebar:
     min_confidence = st.slider("Confiance minimale", 0, 100, 40, 5)
     search = st.text_input("Recherche libre", placeholder="rooftop, Cannes, hôtel…")
     st.divider()
-    st.caption("V2.1 · uniquement des établissements réels et sourcés. Les statuts incertains sont explicitement marqués à revalider.")
+    st.caption("Pré-version · les lignes marquées DÉMO servent uniquement à valider le fonctionnement.")
 
 filtered = df[
     df["departement"].isin(departments)
@@ -95,7 +95,7 @@ with tab_dashboard:
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Signaux visibles", len(filtered))
     c2.metric("Ouvertures < 3 mois", int((filtered["horizon"] == HORIZONS[0]).sum()))
-    c3.metric("Ouverts récemment", int((filtered["horizon"] == "E — ouvert récemment").sum()))
+    c3.metric("Reprises / transformations", int((filtered["horizon"] == HORIZONS[4]).sum()))
     c4.metric("Confiance moyenne", f"{filtered['indice_confiance'].mean():.0f}%" if len(filtered) else "—")
 
     st.subheader("À traiter en priorité")
@@ -240,4 +240,4 @@ with tab_catalogue:
         ["No/low alcohol", "Bières 0,0 %, jus, sirops, tonics et eaux"],
     ], columns=["Usage détecté", "Familles du catalogue"])
     st.dataframe(catalogue, use_container_width=True, hide_index=True)
-    st.info("La V2.1 utilise les familles identifiées dans la liste de 1 378 articles. Elle n’effectue aucun calcul de rentabilité.")
+    st.info("La pré-version utilise les familles identifiées dans la liste de 1 378 articles. Elle n’effectue aucun calcul de rentabilité.")
