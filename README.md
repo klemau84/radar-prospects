@@ -11,7 +11,7 @@ Pré-version Streamlit d'un radar commercial destiné à détecter les nouveaux 
 - bibliothèque de sources et de requêtes de veille ;
 - correspondance entre concepts détectés et familles du catalogue.
 
-Le jeu initial mélange une publication publique vérifiée et des lignes fictives marquées `DÉMO FICTIVE`. Ces dernières servent uniquement à tester l'interface.
+Le jeu initial contient uniquement des établissements réels accompagnés d'une source publique. Les projets dont l'ouverture ou l'activité actuelle n'a pas été confirmée sont explicitement marqués à revalider.
 
 ## Lancer localement
 
@@ -41,4 +41,3 @@ L'onglet **Importer / ajouter** permet de télécharger un modèle CSV vide. La 
 - validation humaine des signaux ;
 - stockage persistant ;
 - enrichissement SIRENE/RNE/BODACC.
-
