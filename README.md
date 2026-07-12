@@ -1,6 +1,6 @@
-# Radar prospects boissons — 06 & 83 · V3
+# Radar prospects boissons — 06 & 83 · V4
 
-Radar Streamlit centré sur les projets avant ouverture : annonces, autorisations, travaux, recrutements, préouvertures et tendances internationales transférables.
+Radar Streamlit centré sur les projets avant ouverture et l'arbitrage de nouvelles gammes selon la demande potentielle, la marge probable, l'effort de référencement et le risque de stock.
 
 ## Fonctionnalités
 
@@ -10,6 +10,7 @@ Radar Streamlit centré sur les projets avant ouverture : annonces, autorisation
 - ajout manuel et import/export CSV ;
 - bibliothèque de sources et de requêtes de veille ;
 - correspondance entre concepts détectés et familles du catalogue.
+- matrice modifiable des opportunités produits et export de l'arbitrage ;
 
 Le jeu initial contient uniquement des établissements réels accompagnés d'une source publique. Les projets dont l'ouverture ou l'activité actuelle n'a pas été confirmée sont explicitement marqués à revalider.
 
@@ -41,3 +42,4 @@ L'onglet **Importer / ajouter** permet de télécharger un modèle CSV vide. La 
 - validation humaine des signaux ;
 - stockage persistant ;
 - enrichissement SIRENE/RNE/BODACC.
+- remplacement des hypothèses de marge par les tarifs et conditions réels des fournisseurs.

@@ -9,7 +9,8 @@ import streamlit as st
 
 ROOT = Path(__file__).parent
 DATA_FILE = ROOT / "data" / "prospects.csv"
-DATA_VERSION = "3.0.0"
+PRODUCT_FILE = ROOT / "data" / "opportunites_produits.csv"
+DATA_VERSION = "4.0.0"
 
 STAGES = ["Projet annoncé", "Autorisation", "Travaux", "Recrutement", "Préouverture", "Ouvert", "Reprise", "À vérifier"]
 HORIZONS = ["A — moins de 3 mois", "B — 3 à 6 mois", "C — plus de 6 mois", "D — date inconnue", "E — ouvert récemment", "R — reprise / transformation"]
@@ -48,6 +49,9 @@ st.markdown(
 def load_prospects() -> pd.DataFrame:
     return pd.read_csv(DATA_FILE, dtype={"departement": str})
 
+def load_product_opportunities() -> pd.DataFrame:
+    return pd.read_csv(PRODUCT_FILE)
+
 
 def prepare(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
@@ -61,9 +65,11 @@ def prepare(df: pd.DataFrame) -> pd.DataFrame:
 
 if st.session_state.get("data_version") != DATA_VERSION:
     st.session_state.prospects = prepare(load_prospects())
+    st.session_state.product_opportunities = load_product_opportunities()
     st.session_state.data_version = DATA_VERSION
 
 df = st.session_state.prospects
+products_df = st.session_state.product_opportunities
 
 st.title("Radar prospects boissons · 06 & 83")
 st.caption("Détecter les ouvertures, reprises et nouveaux concepts avant leur présence dans les annuaires classiques.")
@@ -76,7 +82,7 @@ with st.sidebar:
     min_confidence = st.slider("Confiance minimale", 0, 100, 40, 5)
     search = st.text_input("Recherche libre", placeholder="rooftop, Cannes, hôtel…")
     st.divider()
-    st.caption("V3 · radar centré sur les projets avant ouverture. Les établissements déjà ouverts sont archivés séparément.")
+    st.caption("V4 · projets avant ouverture et arbitrage des nouvelles gammes selon potentiel, marge probable et effort de référencement.")
 
 filtered = df[
     df["departement"].isin(departments)
@@ -88,8 +94,8 @@ if search:
     mask = filtered.astype(str).apply(lambda col: col.str.contains(search, case=False, na=False)).any(axis=1)
     filtered = filtered[mask]
 
-tab_dashboard, tab_radar, tab_archive, tab_import, tab_sources, tab_catalogue = st.tabs(
-    ["Avant ouverture", "Projets", "Ouverts / archive", "Importer / ajouter", "Sources & requêtes", "Tendances & catalogue"]
+tab_dashboard, tab_radar, tab_products, tab_archive, tab_import, tab_sources, tab_catalogue = st.tabs(
+    ["Avant ouverture", "Projets", "Opportunités produits", "Ouverts / archive", "Importer / ajouter", "Sources & requêtes", "Tendances & catalogue"]
 )
 
 with tab_dashboard:
@@ -146,6 +152,34 @@ with tab_radar:
         file_name=f"radar_prospects_{date.today().isoformat()}.csv",
         mime="text/csv",
     )
+
+with tab_products:
+    st.subheader("Potentiel de nouvelles gammes")
+    st.caption("Les marges sont des hypothèses comparatives, pas des marges constatées. Elles devront être remplacées par les devis fournisseurs.")
+    editable_columns = ["famille", "segments_cibles", "demande_score", "marge_score", "mutualisation_score", "effort_referencement", "risque_stock", "minimum_achat", "conservation", "statut_hypothese"]
+    edited = st.data_editor(
+        products_df[editable_columns], use_container_width=True, hide_index=True, num_rows="fixed",
+        column_config={
+            "demande_score": st.column_config.NumberColumn("Demande /5", min_value=1, max_value=5, step=1),
+            "marge_score": st.column_config.NumberColumn("Marge probable /5", min_value=1, max_value=5, step=1),
+            "mutualisation_score": st.column_config.NumberColumn("Multi-segments /5", min_value=1, max_value=5, step=1),
+            "effort_referencement": st.column_config.NumberColumn("Effort /5", min_value=1, max_value=5, step=1),
+            "risque_stock": st.column_config.NumberColumn("Risque stock /5", min_value=1, max_value=5, step=1),
+        }, key="product_editor",
+    )
+    scored = edited.copy()
+    scored["score_opportunite"] = (scored["demande_score"] * scored["marge_score"] * scored["mutualisation_score"] / (scored["effort_referencement"] * scored["risque_stock"])).round(1)
+    scored["decision"] = pd.cut(scored["score_opportunite"], bins=[-1, 4, 10, float("inf")], labels=["Veille", "Test pilote", "Prioritaire"]).astype(str)
+    p1, p2, p3 = st.columns(3)
+    p1.metric("Gammes étudiées", len(scored))
+    p2.metric("Prioritaires", int((scored["decision"] == "Prioritaire").sum()))
+    p3.metric("Tests pilotes", int((scored["decision"] == "Test pilote").sum()))
+    ranking = scored.sort_values("score_opportunite", ascending=False)
+    st.dataframe(ranking[["famille", "segments_cibles", "score_opportunite", "decision", "minimum_achat", "conservation", "statut_hypothese"]], use_container_width=True, hide_index=True)
+    st.download_button("Télécharger l'arbitrage produits", ranking.to_csv(index=False).encode("utf-8-sig"), "arbitrage_nouvelles_gammes.csv", "text/csv")
+    with st.expander("Comment l'indice est calculé"):
+        st.code("(Demande × Marge probable × Mutualisation) / (Effort de référencement × Risque de stock)")
+        st.write("Cet indice compare les gammes entre elles. Ce n'est ni un taux de marge ni un chiffre d'affaires prévisionnel.")
 
 with tab_archive:
     st.subheader("Établissements déjà ouverts")
@@ -263,4 +297,4 @@ with tab_catalogue:
         ["No/low alcohol", "Bières 0,0 %, jus, sirops, tonics et eaux"],
     ], columns=["Usage détecté", "Familles du catalogue"])
     st.dataframe(catalogue, use_container_width=True, hide_index=True)
-    st.info("La V3 croise les familles identifiées dans les 1 378 articles avec les tendances internationales transférables au 06 et au 83.")
+    st.info("La V4 croise les 1 378 articles existants avec les tendances internationales et les opportunités de nouvelles gammes.")
