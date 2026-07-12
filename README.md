@@ -1,6 +1,6 @@
-# Radar prospects boissons — 06 & 83 · V2.2
+# Radar prospects boissons — 06 & 83 · V3
 
-Pré-version Streamlit d'un radar commercial destiné à détecter les nouveaux établissements, reprises, transformations et niches pertinentes pour un grossiste en boissons.
+Radar Streamlit centré sur les projets avant ouverture : annonces, autorisations, travaux, recrutements, préouvertures et tendances internationales transférables.
 
 ## Fonctionnalités
 

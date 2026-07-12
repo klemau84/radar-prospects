@@ -9,7 +9,7 @@ import streamlit as st
 
 ROOT = Path(__file__).parent
 DATA_FILE = ROOT / "data" / "prospects.csv"
-DATA_VERSION = "2.2.0"
+DATA_VERSION = "3.0.0"
 
 STAGES = ["Projet annoncé", "Autorisation", "Travaux", "Recrutement", "Préouverture", "Ouvert", "Reprise", "À vérifier"]
 HORIZONS = ["A — moins de 3 mois", "B — 3 à 6 mois", "C — plus de 6 mois", "D — date inconnue", "E — ouvert récemment", "R — reprise / transformation"]
@@ -71,12 +71,12 @@ st.caption("Détecter les ouvertures, reprises et nouveaux concepts avant leur p
 with st.sidebar:
     st.header("Filtres")
     departments = st.multiselect("Département", ["06", "83"], default=["06", "83"])
-    selected_stages = st.multiselect("Stade", STAGES, default=STAGES)
+    selected_stages = st.multiselect("Stade", STAGES, default=[s for s in STAGES if s != "Ouvert"])
     selected_horizons = st.multiselect("Horizon", HORIZONS, default=HORIZONS)
     min_confidence = st.slider("Confiance minimale", 0, 100, 40, 5)
     search = st.text_input("Recherche libre", placeholder="rooftop, Cannes, hôtel…")
     st.divider()
-    st.caption("V2.2 · uniquement des établissements réels et sourcés. Les statuts incertains sont explicitement marqués à revalider.")
+    st.caption("V3 · radar centré sur les projets avant ouverture. Les établissements déjà ouverts sont archivés séparément.")
 
 filtered = df[
     df["departement"].isin(departments)
@@ -88,15 +88,15 @@ if search:
     mask = filtered.astype(str).apply(lambda col: col.str.contains(search, case=False, na=False)).any(axis=1)
     filtered = filtered[mask]
 
-tab_dashboard, tab_radar, tab_import, tab_sources, tab_catalogue = st.tabs(
-    ["Vue d’ensemble", "Radar", "Importer / ajouter", "Sources & requêtes", "Catalogue"]
+tab_dashboard, tab_radar, tab_archive, tab_import, tab_sources, tab_catalogue = st.tabs(
+    ["Avant ouverture", "Projets", "Ouverts / archive", "Importer / ajouter", "Sources & requêtes", "Tendances & catalogue"]
 )
 
 with tab_dashboard:
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Signaux visibles", len(filtered))
+    c1.metric("Projets visibles", len(filtered))
     c2.metric("Ouvertures < 3 mois", int((filtered["horizon"] == HORIZONS[0]).sum()))
-    c3.metric("Ouverts récemment", int((filtered["horizon"] == "E — ouvert récemment").sum()))
+    c3.metric("En travaux / recrutement", int(filtered["stade"].isin(["Travaux", "Recrutement", "Préouverture"]).sum()))
     c4.metric("Confiance moyenne", f"{filtered['indice_confiance'].mean():.0f}%" if len(filtered) else "—")
 
     st.subheader("À traiter en priorité")
@@ -122,7 +122,7 @@ with tab_dashboard:
         st.bar_chart(filtered["niche"].value_counts().head(10))
 
 with tab_radar:
-    st.subheader("Signaux détectés")
+    st.subheader("Projets avant ouverture")
     display_columns = [
         "etablissement", "commune", "departement", "type_concept", "niche", "stade", "horizon",
         "date_ouverture_estimee", "signal", "familles_produits", "indice_confiance", "source_url", "statut_donnee"
@@ -145,6 +145,17 @@ with tab_radar:
         data=shown.to_csv(index=False).encode("utf-8-sig"),
         file_name=f"radar_prospects_{date.today().isoformat()}.csv",
         mime="text/csv",
+    )
+
+with tab_archive:
+    st.subheader("Établissements déjà ouverts")
+    st.caption("Ces lignes sont conservées pour mémoire mais ne figurent plus dans les priorités commerciales.")
+    archive = df[df["stade"] == "Ouvert"].sort_values("date_ouverture_estimee", ascending=False)
+    st.dataframe(
+        archive[["etablissement", "commune", "departement", "type_concept", "date_ouverture_estimee", "source_url", "statut_donnee"]],
+        use_container_width=True,
+        hide_index=True,
+        column_config={"source_url": st.column_config.LinkColumn("Source")},
     )
 
 with tab_import:
@@ -230,6 +241,17 @@ with tab_sources:
     st.code("\n".join(queries), language=None)
 
 with tab_catalogue:
+    st.subheader("Tendances internationales transférables")
+    trends = pd.DataFrame([
+        ["No/low premium", "Espagne, Royaume-Uni, pays nordiques", "Bars à mocktails, hôtels bien-être, restaurants premium", "Bières 0,0 %, jus, sirops, tonics, eaux"],
+        ["Spritz et faible degré", "Italie, Espagne, États-Unis", "Aperitivo, rooftops, plages et lieux de fin de journée", "Apéritifs, vins effervescents, sirops, eaux gazeuses"],
+        ["Casual luxe", "Royaume-Uni, Portugal, Italie", "Hôtels lifestyle, clubs, restaurants accessibles premium", "Champagne, vins, café, eaux premium"],
+        ["Competitive socialising", "Royaume-Uni, États-Unis", "Padel, bowling, karaoké, jeux et restauration", "Bière, cocktails, softs, énergisants"],
+        ["Boissons fonctionnelles", "États-Unis, Royaume-Uni", "Fitness premium, spas, concepts healthy et coworking", "Jus, thé, eaux, sans-alcool"],
+        ["Nature et agritourisme", "Italie, Portugal, Grèce", "Domaines, fermes-auberges, glampings et retraites", "Vins, bières locales, jus, café, eaux"],
+    ], columns=["Tendance", "Marchés témoins", "Niches à rechercher dans le 06/83", "Familles concernées"])
+    st.dataframe(trends, use_container_width=True, hide_index=True)
+
     st.subheader("Familles à détecter dans les concepts")
     catalogue = pd.DataFrame([
         ["Cocktails / nightlife", "Spiritueux, liqueurs, sirops, jus, tonics, énergisants"],
@@ -241,4 +263,4 @@ with tab_catalogue:
         ["No/low alcohol", "Bières 0,0 %, jus, sirops, tonics et eaux"],
     ], columns=["Usage détecté", "Familles du catalogue"])
     st.dataframe(catalogue, use_container_width=True, hide_index=True)
-    st.info("La V2.2 utilise les familles identifiées dans la liste de 1 378 articles. Elle n’effectue aucun calcul de rentabilité.")
+    st.info("La V3 croise les familles identifiées dans les 1 378 articles avec les tendances internationales transférables au 06 et au 83.")
