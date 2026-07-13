@@ -1,53 +1,53 @@
 territoire,bassin,commune,priorite,statut_couverture,derniere_recherche,notes
 06,Est,Menton,Haute,Partielle,2026-07-12,Hôtellerie et gastronomie
-06,Est,Roquebrune-Cap-Martin,Haute,Non balayée,,Littoral et proximité Monaco
-06,Est,Beausoleil,Haute,Non balayée,,Débordement de la clientèle monégasque
-06,Est,Cap-d'Ail,Haute,Non balayée,,Hôtels plages et restauration
-06,Est,Èze,Haute,Non balayée,,Hôtellerie premium
+06,Est,Roquebrune-Cap-Martin,Haute,Partielle,2026-07-13,Littoral et proximité Monaco
+06,Est,Beausoleil,Haute,Partielle,2026-07-13,Débordement de la clientèle monégasque
+06,Est,Cap-d'Ail,Haute,Partielle,2026-07-13,Hôtels plages et restauration
+06,Est,Èze,Haute,Partielle,2026-07-13,Hôtellerie premium
 06,Est,Beaulieu-sur-Mer,Haute,Partielle,2026-07-12,Hôtellerie et restauration premium
 06,Est,Saint-Jean-Cap-Ferrat,Haute,Partielle,2026-07-12,Hôtels plages et projets de luxe
 06,Métropole,Nice,Haute,Partielle,2026-07-12,Plusieurs recherches presse mais urbanisme incomplet
 06,Métropole,Saint-Laurent-du-Var,Haute,Partielle,2026-07-12,Port et restauration
 06,Métropole,Cagnes-sur-Mer,Haute,Partielle,2026-07-12,Littoral restauration loisirs
-06,Ouest,Villeneuve-Loubet,Haute,Non balayée,,Marina hôtels et restauration
+06,Ouest,Villeneuve-Loubet,Haute,Partielle,2026-07-13,Marina hôtels et restauration
 06,Ouest,Antibes,Haute,Partielle,2026-07-12,Cap plages hôtels et restaurants
-06,Ouest,Juan-les-Pins,Haute,Non balayée,,Hôtellerie saisonnière et nightlife
-06,Ouest,Vallauris,Normale,Non balayée,,Commerces et loisirs
-06,Ouest,Golfe-Juan,Haute,Non balayée,,Port plages et restaurants
+06,Ouest,Juan-les-Pins,Haute,Partielle,2026-07-13,Hôtellerie saisonnière et nightlife
+06,Ouest,Vallauris,Normale,Partielle,2026-07-13,Commerces et loisirs
+06,Ouest,Golfe-Juan,Haute,Partielle,2026-07-13,Port plages et restaurants
 06,Ouest,Cannes,Haute,Partielle,2026-07-12,Hôtellerie plages événementiel
-06,Ouest,Le Cannet,Normale,Non balayée,,Restauration et commerces
-06,Ouest,Mandelieu-la-Napoule,Haute,Non balayée,,Ports golfs hôtels et événements
+06,Ouest,Le Cannet,Normale,Partielle,2026-07-13,Restauration et commerces
+06,Ouest,Mandelieu-la-Napoule,Haute,Partielle,2026-07-13,Ports golfs hôtels et événements
 06,Ouest,Théoule-sur-Mer,Haute,Partielle,2026-07-12,Hôtellerie littorale
 06,Arrière-pays,Mougins,Haute,Partielle,2026-07-12,Hôtels gastronomie et événements
-06,Arrière-pays,Valbonne,Normale,Non balayée,,Restauration entreprises et loisirs
-06,Arrière-pays,Sophia Antipolis,Normale,Non balayée,,Entreprises coworking et sport
-06,Arrière-pays,Grasse,Normale,Non balayée,,Tourisme événements et commerces
-06,Arrière-pays,Vence,Normale,Non balayée,,Hôtellerie et restauration
-06,Arrière-pays,Saint-Paul-de-Vence,Haute,Non balayée,,Hôtellerie premium et événements
+06,Arrière-pays,Valbonne,Normale,Partielle,2026-07-13,Restauration entreprises et loisirs
+06,Arrière-pays,Sophia Antipolis,Normale,Partielle,2026-07-13,Entreprises coworking et sport
+06,Arrière-pays,Grasse,Normale,Partielle,2026-07-13,Tourisme événements et commerces
+06,Arrière-pays,Vence,Normale,Partielle,2026-07-13,Hôtellerie et restauration
+06,Arrière-pays,Saint-Paul-de-Vence,Haute,Partielle,2026-07-13,Hôtellerie premium et événements
 83,Est,Saint-Raphaël,Haute,Partielle,2026-07-12,Hôtels plages et restaurants
 83,Est,Fréjus,Haute,Partielle,2026-07-12,Restauration loisirs et campings
 83,Est,Saint-Aygulf,Haute,Partielle,2026-07-12,Concessions de plage
 83,Golfe,Sainte-Maxime,Haute,Partielle,2026-07-12,Port restauration et loisirs
 83,Golfe,Grimaud,Haute,Partielle,2026-07-12,Hôtels campings et restauration
-83,Golfe,Cogolin,Normale,Non balayée,,Commerces restauration et port
+83,Golfe,Cogolin,Normale,Partielle,2026-07-13,Commerces restauration et port
 83,Golfe,Saint-Tropez,Haute,Partielle,2026-07-12,Hôtellerie plages et nightlife
-83,Golfe,Ramatuelle,Haute,Non balayée,,Plages hôtels et événements
-83,Golfe,Gassin,Haute,Non balayée,,Hôtellerie et domaines
-83,Golfe,La Croix-Valmer,Haute,Non balayée,,Hôtels plages et domaines
-83,Golfe,Cavalaire-sur-Mer,Haute,Non balayée,,Port plages et restaurants
+83,Golfe,Ramatuelle,Haute,Partielle,2026-07-13,Plages hôtels et événements
+83,Golfe,Gassin,Haute,Partielle,2026-07-13,Hôtellerie et domaines
+83,Golfe,La Croix-Valmer,Haute,Partielle,2026-07-13,Hôtels plages et domaines
+83,Golfe,Cavalaire-sur-Mer,Haute,Partielle,2026-07-13,Port plages et restaurants
 83,Littoral,Le Lavandou,Haute,Partielle,2026-07-12,Hôtellerie et littoral
 83,Littoral,Bormes-les-Mimosas,Haute,Partielle,2026-07-12,Hôtels campings et plages
 83,Littoral,La Londe-les-Maures,Haute,Partielle,2026-07-12,Domaines port et restauration
 83,Littoral,Hyères,Haute,Partielle,2026-07-12,Hôtels plages campings et nautisme
-83,Littoral,Carqueiranne,Normale,Non balayée,,Port restauration et plages
-83,Métropole,Le Pradet,Normale,Non balayée,,Littoral et restauration
+83,Littoral,Carqueiranne,Normale,Partielle,2026-07-13,Port restauration et plages
+83,Métropole,Le Pradet,Normale,Partielle,2026-07-13,Littoral et restauration
 83,Métropole,Toulon,Haute,Partielle,2026-07-12,Nombreux résultats presse urbanisme incomplet
 83,Métropole,La Valette-du-Var,Haute,Partielle,2026-07-12,Centres commerciaux et loisirs
-83,Métropole,La Garde,Normale,Non balayée,,Restauration commerces et sport
-83,Métropole,La Seyne-sur-Mer,Haute,Non balayée,,Ports hôtels et restauration
-83,Métropole,Six-Fours-les-Plages,Haute,Non balayée,,Plages îles et restauration
-83,Ouest,Sanary-sur-Mer,Haute,Non balayée,,Port hôtels et restaurants
+83,Métropole,La Garde,Normale,Partielle,2026-07-13,Restauration commerces et sport
+83,Métropole,La Seyne-sur-Mer,Haute,Partielle,2026-07-13,Ports hôtels et restauration
+83,Métropole,Six-Fours-les-Plages,Haute,Partielle,2026-07-13,Plages îles et restauration
+83,Ouest,Sanary-sur-Mer,Haute,Partielle,2026-07-13,Port hôtels et restaurants
 83,Ouest,Bandol,Haute,Partielle,2026-07-12,Hôtels restaurants et nautisme
-83,Ouest,Le Castellet,Haute,Non balayée,,Hôtels domaines circuit et événements
-83,Intérieur,Draguignan,Normale,Non balayée,,Événementiel loisirs et restauration
+83,Ouest,Le Castellet,Haute,Partielle,2026-07-13,Hôtels domaines circuit et événements
+83,Intérieur,Draguignan,Normale,Partielle,2026-07-13,Événementiel loisirs et restauration
 MC,Monaco,Monaco,Haute,Partielle,2026-07-12,Hôtellerie SBM gastronomie yachting et événements
