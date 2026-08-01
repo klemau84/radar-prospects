@@ -1,0 +1,13 @@
+﻿type_signal,libelle,points,actif,description
+urbanisme,Urbanisme / permis,120,1,"Permis, changement de destination, travaux"
+recrutement,Recrutement,100,1,Offres d'emploi liées à une ouverture
+bodacc,BODACC / registre,90,1,"Création, reprise, changement de dirigeant"
+appel_offres,Appel d'offres,90,1,"Cuisine, froid, bar, travaux, concession"
+presse,Presse locale,70,1,"Annonce d'ouverture, reprise ou rénovation"
+google_news,Google News,60,1,Signal agrégé à qualifier
+google_maps,Google Maps,50,1,Nouvelle fiche ou évolution visible
+port_marina,Port / marina,50,1,"Concession, yacht club, capitainerie"
+instagram,Instagram,30,1,Annonce ou teasing d'ouverture
+facebook,Facebook,25,1,Annonce locale
+avis,Avis / notation,15,1,Hausse rapide des avis ou première activité
+autre,Autre signal,10,1,Signal non classé

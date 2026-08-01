@@ -1,5 +1,5 @@
 ﻿cle,valeur
-version_application,V5.2
+version_application,V7.1a
 date_generation_utc,2026-08-01T13:38:23Z
 actualisation_automatique,Hebdomadaire
 mode_actualisation,Remplacement des fichiers du dépôt
@@ -14,3 +14,6 @@ dernier_passage_automatique_utc,Pas encore exécuté
 nombre_signaux_a_qualifier,0
 nouveaux_signaux_dernier_passage,0
 erreurs_dernier_passage,0
+moteur_scoring,Actif
+moteur_fusion,Actif
+nombre_prospects_scores,43

@@ -18,7 +18,12 @@ LATEST_FILE = ROOT / "data" / "dernieres_nouveautes.csv"
 UPDATE_HISTORY_FILE = ROOT / "data" / "historique_mises_a_jour.csv"
 WEEKLY_SIGNALS_FILE = ROOT / "data" / "signaux_hebdo.csv"
 NEW_SIGNALS_FILE = ROOT / "data" / "nouveaux_signaux.csv"
-DATA_VERSION = "5.2.0"
+SCORES_FILE = ROOT / "data" / "scores.csv"
+PRIORITIES_FILE = ROOT / "data" / "priorites.csv"
+HISTORY_SIGNALS_FILE = ROOT / "data" / "historique_signaux.csv"
+FUSION_FILE = ROOT / "data" / "fusion_prospects.csv"
+SCORING_RULES_FILE = ROOT / "data" / "scoring_rules.csv"
+DATA_VERSION = "7.1a"
 
 STAGES = ["Projet annoncé", "Autorisation", "Travaux", "Recrutement", "Préouverture", "Ouvert", "Reprise", "À vérifier"]
 HORIZONS = ["A — moins de 3 mois", "B — 3 à 6 mois", "C — plus de 6 mois", "D — date inconnue", "E — ouvert récemment", "R — reprise / transformation"]
@@ -84,6 +89,21 @@ def load_weekly_signals() -> pd.DataFrame:
 def load_new_signals() -> pd.DataFrame:
     return pd.read_csv(NEW_SIGNALS_FILE, dtype={"territoire": str})
 
+def load_scores() -> pd.DataFrame:
+    return pd.read_csv(SCORES_FILE, dtype={"departement": str})
+
+def load_priorities() -> pd.DataFrame:
+    return pd.read_csv(PRIORITIES_FILE, dtype={"departement": str})
+
+def load_signal_history() -> pd.DataFrame:
+    return pd.read_csv(HISTORY_SIGNALS_FILE)
+
+def load_fusion_proposals() -> pd.DataFrame:
+    return pd.read_csv(FUSION_FILE)
+
+def load_scoring_rules() -> pd.DataFrame:
+    return pd.read_csv(SCORING_RULES_FILE)
+
 
 def prepare(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
@@ -106,6 +126,11 @@ if st.session_state.get("data_version") != DATA_VERSION:
     st.session_state.update_history = load_update_history()
     st.session_state.weekly_signals = load_weekly_signals()
     st.session_state.new_signals = load_new_signals()
+    st.session_state.scores = load_scores()
+    st.session_state.priorities = load_priorities()
+    st.session_state.signal_history = load_signal_history()
+    st.session_state.fusion_proposals = load_fusion_proposals()
+    st.session_state.scoring_rules = load_scoring_rules()
     st.session_state.data_version = DATA_VERSION
 
 df = st.session_state.prospects
@@ -118,6 +143,11 @@ latest_signals_df = st.session_state.latest_signals
 update_history_df = st.session_state.update_history
 weekly_signals_df = st.session_state.weekly_signals
 new_signals_df = st.session_state.new_signals
+scores_df = st.session_state.scores
+priorities_df = st.session_state.priorities
+signal_history_df = st.session_state.signal_history
+fusion_proposals_df = st.session_state.fusion_proposals
+scoring_rules_df = st.session_state.scoring_rules
 metadata_map = dict(zip(metadata_df["cle"], metadata_df["valeur"])) if not metadata_df.empty else {}
 
 st.title("Radar prospects boissons · 06 & 83")
@@ -142,7 +172,7 @@ with st.sidebar:
     min_confidence = st.slider("Confiance minimale", 0, 100, 40, 5)
     search = st.text_input("Recherche libre", placeholder="rooftop, Cannes, hôtel…")
     st.divider()
-    st.caption("V5.2 · veille hebdomadaire automatisée et qualification des nouveaux signaux.")
+    st.caption("V7.1a · fusion des signaux, scoring configurable et priorisation commerciale.")
 
 filtered = df[
     df["departement"].isin(departments)
@@ -154,8 +184,8 @@ if search:
     mask = filtered.astype(str).apply(lambda col: col.str.contains(search, case=False, na=False)).any(axis=1)
     filtered = filtered[mask]
 
-tab_dashboard, tab_radar, tab_coverage, tab_products, tab_archive, tab_import, tab_signals, tab_status, tab_sources, tab_catalogue = st.tabs(
-    ["Avant ouverture", "Projets", "Couverture territoriale", "Opportunités produits", "Ouverts / archive", "Importer / ajouter", "Signaux hebdo", "État des données", "Sources & requêtes", "Tendances & catalogue"]
+tab_dashboard, tab_radar, tab_priority, tab_intelligence, tab_coverage, tab_products, tab_archive, tab_import, tab_signals, tab_status, tab_sources, tab_catalogue = st.tabs(
+    ["Avant ouverture", "Projets", "À traiter", "Intelligence", "Couverture territoriale", "Opportunités produits", "Ouverts / archive", "Importer / ajouter", "Signaux hebdo", "État des données", "Sources & requêtes", "Tendances & catalogue"]
 )
 
 with tab_dashboard:
@@ -255,6 +285,53 @@ with tab_products:
     with st.expander("Comment l'indice est calculé"):
         st.code("(Demande × Marge probable × Mutualisation) / (Effort de référencement × Risque de stock)")
         st.write("Cet indice compare les gammes entre elles. Ce n'est ni un taux de marge ni un chiffre d'affaires prévisionnel.")
+
+
+with tab_priority:
+    st.subheader("Priorités commerciales calculées")
+    p1, p2, p3, p4 = st.columns(4)
+    p1.metric("Urgents", int((priorities_df["priorite"] == "Urgent").sum()))
+    p2.metric("Prioritaires", int((priorities_df["priorite"] == "Prioritaire").sum()))
+    p3.metric("Intéressants", int((priorities_df["priorite"] == "Intéressant").sum()))
+    p4.metric("Veille", int((priorities_df["priorite"] == "Veille").sum()))
+    st.dataframe(
+        priorities_df[
+            ["ordre_traitement","etablissement","commune","departement",
+             "score_total","probabilite_ouverture_pct","priorite",
+             "nombre_signaux","nombre_sources","derniere_activite"]
+        ],
+        use_container_width=True,
+        hide_index=True,
+    )
+    st.caption(
+        "Le score sert à ordonner le travail commercial. "
+        "La probabilité affichée est un indicateur interne, pas une probabilité statistique."
+    )
+
+with tab_intelligence:
+    st.subheader("Règles de scoring")
+    st.dataframe(
+        scoring_rules_df,
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    st.subheader("Propositions de fusion")
+    if fusion_proposals_df.empty:
+        st.info("Aucune proposition de fusion.")
+    else:
+        st.dataframe(
+            fusion_proposals_df.sort_values("score_rapprochement_pct", ascending=False),
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.subheader("Historique consolidé des signaux")
+    st.dataframe(
+        signal_history_df.sort_values("date_evenement", ascending=False),
+        use_container_width=True,
+        hide_index=True,
+    )
 
 with tab_coverage:
     st.subheader("Couverture géographique · 06, 83 et Monaco")

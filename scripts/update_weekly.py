@@ -21,6 +21,7 @@ PROSPECTS = DATA / "prospects.csv"
 TERRITORIES = DATA / "territoires.csv"
 QUERIES = DATA / "requetes_veille.csv"
 SIGNALS = DATA / "signaux_hebdo.csv"
+CONSOLIDATED_SIGNALS = DATA / "signaux.csv"
 NEW_SIGNALS = DATA / "nouveaux_signaux.csv"
 LATEST = DATA / "dernieres_nouveautes.csv"
 METADATA = DATA / "metadonnees_application.csv"
@@ -209,9 +210,35 @@ def main() -> None:
     merged.to_csv(SIGNALS, index=False, encoding="utf-8-sig")
     new.to_csv(NEW_SIGNALS, index=False, encoding="utf-8-sig")
 
+    consolidated = merged.copy()
+    consolidated["prospect_id"] = ""
+    consolidated["date_evenement"] = consolidated["date_publication"]
+    consolidated["type_signal"] = consolidated["theme"].fillna("").str.lower().map(
+        lambda x: "recrutement" if "recrut" in x else (
+            "urbanisme" if "urbanisme" in x else "google_news"
+        )
+    )
+    consolidated["source_id"] = "SRC-GNEWS"
+    consolidated["confiance_signal_pct"] = 50
+    consolidated["validation"] = "À qualifier"
+    for col in [
+        "signal_id","prospect_id","date_detection_utc","date_evenement",
+        "territoire","zone","theme","type_signal","titre","source_id","source",
+        "url","resume","requete","confiance_signal_pct","validation","est_nouveau"
+    ]:
+        if col not in consolidated.columns:
+            consolidated[col] = ""
+    consolidated[[
+        "signal_id","prospect_id","date_detection_utc","date_evenement",
+        "territoire","zone","theme","type_signal","titre","source_id","source",
+        "url","resume","requete","confiance_signal_pct","validation","est_nouveau"
+    ]].to_csv(CONSOLIDATED_SIGNALS, index=False, encoding="utf-8-sig")
+
     added, modified = prospect_changes()
     append_history(len(new), added, modified, errors)
     rebuild_status(len(new), errors)
+    from rebuild_intelligence import rebuild as rebuild_intelligence
+    rebuild_intelligence()
 
     print(
         f"Veille terminée: {len(new)} nouveaux signaux, "

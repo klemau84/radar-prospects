@@ -1,0 +1,11 @@
+﻿source_id,source,type_signal,mode_collecte,frequence,niveau_confiance
+SRC-GNEWS,Google News RSS,google_news,Automatique,Hebdomadaire,À qualifier
+SRC-PRESSE,Presse locale,presse,Semi-automatique,Hebdomadaire,À qualifier
+SRC-URBA,Urbanisme,urbanisme,Manuel / futur connecteur,Mensuel,Prioritaire
+SRC-EMPLOI,Recrutement,recrutement,Manuel / futur connecteur,Hebdomadaire,Prioritaire
+SRC-BODACC,BODACC,bodacc,Futur connecteur,Hebdomadaire,Prioritaire
+SRC-AO,Appels d'offres,appel_offres,Futur connecteur,Hebdomadaire,Prioritaire
+SRC-PORT,Ports et marinas,port_marina,Manuel / futur connecteur,Mensuel,Prioritaire
+SRC-GMAPS,Google Maps,google_maps,Manuel,Mensuel,À qualifier
+SRC-INSTA,Instagram,instagram,Manuel,Hebdomadaire,À qualifier
+SRC-FB,Facebook,facebook,Manuel,Hebdomadaire,À qualifier
