@@ -239,6 +239,8 @@ def main() -> None:
     rebuild_status(len(new), errors)
     from rebuild_intelligence import rebuild as rebuild_intelligence
     rebuild_intelligence()
+    from rebuild_crm import rebuild as rebuild_crm
+    rebuild_crm()
 
     print(
         f"Veille terminée: {len(new)} nouveaux signaux, "

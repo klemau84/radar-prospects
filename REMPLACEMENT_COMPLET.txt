@@ -1,1 +1,1 @@
-Conserver uniquement .git, supprimer le reste, copier le ZIP. Commit conseillé : V7.1a - Fusion et scoring
+Conserver uniquement .git, supprimer le reste, copier le ZIP. Commit conseillé : V7.1b - Fiche 360 et CRM

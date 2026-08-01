@@ -23,7 +23,12 @@ PRIORITIES_FILE = ROOT / "data" / "priorites.csv"
 HISTORY_SIGNALS_FILE = ROOT / "data" / "historique_signaux.csv"
 FUSION_FILE = ROOT / "data" / "fusion_prospects.csv"
 SCORING_RULES_FILE = ROOT / "data" / "scoring_rules.csv"
-DATA_VERSION = "7.1a"
+PROSPECTS_360_FILE = ROOT / "data" / "prospects_360.csv"
+ACTIONS_FILE = ROOT / "data" / "actions_commerciales.csv"
+CONTACTS_FILE = ROOT / "data" / "contacts.csv"
+VALIDATION_FUSIONS_FILE = ROOT / "data" / "validation_fusions.csv"
+TREATMENT_FILE = ROOT / "data" / "a_traiter.csv"
+DATA_VERSION = "7.1b"
 
 STAGES = ["Projet annoncé", "Autorisation", "Travaux", "Recrutement", "Préouverture", "Ouvert", "Reprise", "À vérifier"]
 HORIZONS = ["A — moins de 3 mois", "B — 3 à 6 mois", "C — plus de 6 mois", "D — date inconnue", "E — ouvert récemment", "R — reprise / transformation"]
@@ -104,6 +109,21 @@ def load_fusion_proposals() -> pd.DataFrame:
 def load_scoring_rules() -> pd.DataFrame:
     return pd.read_csv(SCORING_RULES_FILE)
 
+def load_prospects_360() -> pd.DataFrame:
+    return pd.read_csv(PROSPECTS_360_FILE, dtype={"departement": str})
+
+def load_actions() -> pd.DataFrame:
+    return pd.read_csv(ACTIONS_FILE)
+
+def load_contacts() -> pd.DataFrame:
+    return pd.read_csv(CONTACTS_FILE)
+
+def load_validation_fusions() -> pd.DataFrame:
+    return pd.read_csv(VALIDATION_FUSIONS_FILE)
+
+def load_treatment_board() -> pd.DataFrame:
+    return pd.read_csv(TREATMENT_FILE, dtype={"departement": str})
+
 
 def prepare(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
@@ -131,6 +151,11 @@ if st.session_state.get("data_version") != DATA_VERSION:
     st.session_state.signal_history = load_signal_history()
     st.session_state.fusion_proposals = load_fusion_proposals()
     st.session_state.scoring_rules = load_scoring_rules()
+    st.session_state.prospects_360 = load_prospects_360()
+    st.session_state.actions = load_actions()
+    st.session_state.contacts = load_contacts()
+    st.session_state.validation_fusions = load_validation_fusions()
+    st.session_state.treatment_board = load_treatment_board()
     st.session_state.data_version = DATA_VERSION
 
 df = st.session_state.prospects
@@ -148,6 +173,11 @@ priorities_df = st.session_state.priorities
 signal_history_df = st.session_state.signal_history
 fusion_proposals_df = st.session_state.fusion_proposals
 scoring_rules_df = st.session_state.scoring_rules
+prospects_360_df = st.session_state.prospects_360
+actions_df = st.session_state.actions
+contacts_df = st.session_state.contacts
+validation_fusions_df = st.session_state.validation_fusions
+treatment_board_df = st.session_state.treatment_board
 metadata_map = dict(zip(metadata_df["cle"], metadata_df["valeur"])) if not metadata_df.empty else {}
 
 st.title("Radar prospects boissons · 06 & 83")
@@ -172,7 +202,7 @@ with st.sidebar:
     min_confidence = st.slider("Confiance minimale", 0, 100, 40, 5)
     search = st.text_input("Recherche libre", placeholder="rooftop, Cannes, hôtel…")
     st.divider()
-    st.caption("V7.1a · fusion des signaux, scoring configurable et priorisation commerciale.")
+    st.caption("V7.1b · fiche prospect 360°, actions commerciales, relances et validation des fusions.")
 
 filtered = df[
     df["departement"].isin(departments)
@@ -184,8 +214,8 @@ if search:
     mask = filtered.astype(str).apply(lambda col: col.str.contains(search, case=False, na=False)).any(axis=1)
     filtered = filtered[mask]
 
-tab_dashboard, tab_radar, tab_priority, tab_intelligence, tab_coverage, tab_products, tab_archive, tab_import, tab_signals, tab_status, tab_sources, tab_catalogue = st.tabs(
-    ["Avant ouverture", "Projets", "À traiter", "Intelligence", "Couverture territoriale", "Opportunités produits", "Ouverts / archive", "Importer / ajouter", "Signaux hebdo", "État des données", "Sources & requêtes", "Tendances & catalogue"]
+tab_dashboard, tab_radar, tab_priority, tab_360, tab_crm, tab_intelligence, tab_coverage, tab_products, tab_archive, tab_import, tab_signals, tab_status, tab_sources, tab_catalogue = st.tabs(
+    ["Avant ouverture", "Projets", "À traiter", "Fiche 360°", "Actions commerciales", "Intelligence", "Couverture territoriale", "Opportunités produits", "Ouverts / archive", "Importer / ajouter", "Signaux hebdo", "État des données", "Sources & requêtes", "Tendances & catalogue"]
 )
 
 with tab_dashboard:
@@ -288,25 +318,85 @@ with tab_products:
 
 
 with tab_priority:
-    st.subheader("Priorités commerciales calculées")
+    st.subheader("Tableau de traitement commercial")
     p1, p2, p3, p4 = st.columns(4)
-    p1.metric("Urgents", int((priorities_df["priorite"] == "Urgent").sum()))
-    p2.metric("Prioritaires", int((priorities_df["priorite"] == "Prioritaire").sum()))
-    p3.metric("Intéressants", int((priorities_df["priorite"] == "Intéressant").sum()))
-    p4.metric("Veille", int((priorities_df["priorite"] == "Veille").sum()))
+    p1.metric("Urgents", int((treatment_board_df["priorite"] == "Urgent").sum()))
+    p2.metric("Prioritaires", int((treatment_board_df["priorite"] == "Prioritaire").sum()))
+    p3.metric("Non contactés", int((treatment_board_df["statut_commercial"] == "Non contacté").sum()))
+    p4.metric("Relances planifiées", int(treatment_board_df["action_recommandee"].notna().sum()))
     st.dataframe(
-        priorities_df[
+        treatment_board_df[
             ["ordre_traitement","etablissement","commune","departement",
-             "score_total","probabilite_ouverture_pct","priorite",
-             "nombre_signaux","nombre_sources","derniere_activite"]
+             "stade","score_total","probabilite_ouverture_pct","priorite",
+             "signaux_total","statut_commercial","action_recommandee"]
         ],
         use_container_width=True,
         hide_index=True,
     )
     st.caption(
-        "Le score sert à ordonner le travail commercial. "
-        "La probabilité affichée est un indicateur interne, pas une probabilité statistique."
+        "La probabilité d'ouverture est un indicateur interne de priorisation. "
+        "Elle ne constitue pas une probabilité statistique."
     )
+
+
+with tab_360:
+    st.subheader("Fiche prospect 360°")
+    choices = prospects_360_df.sort_values(
+        ["priorite","score_total"], ascending=[True,False]
+    )["etablissement"].tolist()
+    selected = st.selectbox("Prospect", choices, key="prospect_360")
+    row = prospects_360_df[prospects_360_df["etablissement"] == selected].iloc[0]
+
+    c1,c2,c3,c4,c5 = st.columns(5)
+    c1.metric("Score", int(row["score_total"]))
+    c2.metric("Priorité", row["priorite"])
+    c3.metric("Indicateur d'ouverture", f"{int(row['probabilite_ouverture_pct'])} %")
+    c4.metric("Signaux", int(row["signaux_total"]))
+    c5.metric("Statut commercial", row["statut_commercial"])
+
+    st.markdown(f"## {row['etablissement']}")
+    st.markdown(
+        f"**Localisation :** {row['commune']} ({row['departement']})\n\n"
+        f"**Concept :** {row.get('type_concept','')}\n\n"
+        f"**Stade :** {row.get('stade','')}\n\n"
+        f"**Ouverture estimée :** {row.get('date_ouverture_estimee','')}\n\n"
+        f"**Action recommandée :** {row['action_recommandee']}"
+    )
+
+    st.subheader("Sources et signaux")
+    st.write(f"**Types :** {row.get('types_signaux','') or 'Aucun signal rattaché'}")
+    st.write(f"**Sources :** {row.get('sources_signaux','') or 'Aucune source rattachée'}")
+
+    prospect_history = signal_history_df[
+        signal_history_df["prospect_id"] == row["prospect_id"]
+    ].sort_values("date_evenement", ascending=False)
+    st.dataframe(
+        prospect_history,
+        use_container_width=True,
+        hide_index=True,
+    )
+
+with tab_crm:
+    st.subheader("Actions commerciales")
+    st.warning(
+        "Cette V7.1b prépare le CRM. Pour ajouter durablement une action, "
+        "complète `data/actions_commerciales.csv`, puis lance "
+        "`python scripts/rebuild_crm.py`."
+    )
+
+    st.dataframe(actions_df, use_container_width=True, hide_index=True)
+
+    st.subheader("Contacts")
+    st.dataframe(contacts_df, use_container_width=True, hide_index=True)
+
+    st.subheader("Relances à venir")
+    if actions_df.empty or "prochaine_relance" not in actions_df.columns:
+        st.info("Aucune relance enregistrée.")
+    else:
+        relances = actions_df[
+            actions_df["prochaine_relance"].fillna("").astype(str).str.strip() != ""
+        ].sort_values("prochaine_relance")
+        st.dataframe(relances, use_container_width=True, hide_index=True)
 
 with tab_intelligence:
     st.subheader("Règles de scoring")
@@ -316,14 +406,18 @@ with tab_intelligence:
         hide_index=True,
     )
 
-    st.subheader("Propositions de fusion")
-    if fusion_proposals_df.empty:
+    st.subheader("Validation des propositions de fusion")
+    if validation_fusions_df.empty:
         st.info("Aucune proposition de fusion.")
     else:
         st.dataframe(
-            fusion_proposals_df.sort_values("score_rapprochement_pct", ascending=False),
+            validation_fusions_df.sort_values("score_rapprochement_pct", ascending=False),
             use_container_width=True,
             hide_index=True,
+        )
+        st.caption(
+            "Les décisions doivent être saisies dans `data/validation_fusions.csv`. "
+            "Aucune fusion n'est appliquée automatiquement."
         )
 
     st.subheader("Historique consolidé des signaux")

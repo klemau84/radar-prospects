@@ -1,20 +1,24 @@
 
-# Radar CHR — V7.1a
+# Radar CHR — V7.1b
 
 ## Nouveautés
 
-- modèle séparant signaux, prospects et priorités ;
-- scoring configurable dans `data/scoring_rules.csv` ;
-- propositions de fusion automatique ;
-- historique consolidé des signaux ;
-- tableau **À traiter** ;
-- veille hebdomadaire conservée ;
-- recalcul automatique via `scripts/rebuild_intelligence.py`.
+- fiche prospect 360° ;
+- tableau commercial **À traiter** ;
+- fichiers `actions_commerciales.csv` et `contacts.csv` ;
+- suivi des relances ;
+- validation manuelle des propositions de fusion ;
+- reconstruction CRM avec `scripts/rebuild_crm.py` ;
+- mise à jour automatique du CRM après la veille hebdomadaire.
 
-## Limites
+## Saisie des actions
 
-- une proposition de fusion n'est jamais appliquée automatiquement ;
-- un signal non qualifié ne devient pas automatiquement un prospect ;
-- la probabilité d'ouverture est un indicateur interne de priorité.
+Compléter `data/actions_commerciales.csv`, puis lancer :
 
-Génération UTC : 2026-08-01T14:09:36Z
+```bash
+python scripts/rebuild_crm.py
+```
+
+Aucune fusion de prospects n'est appliquée automatiquement.
+
+Génération UTC : 2026-08-01T14:14:42Z

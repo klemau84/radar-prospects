@@ -1,5 +1,4 @@
 ﻿cle,valeur
-version_application,V7.1a
 date_generation_utc,2026-08-01T13:38:23Z
 actualisation_automatique,Hebdomadaire
 mode_actualisation,Remplacement des fichiers du dépôt
@@ -17,3 +16,7 @@ erreurs_dernier_passage,0
 moteur_scoring,Actif
 moteur_fusion,Actif
 nombre_prospects_scores,43
+version_application,V7.1b
+crm,Préparé
+nombre_fiches_360,43
+nombre_actions_commerciales,0
