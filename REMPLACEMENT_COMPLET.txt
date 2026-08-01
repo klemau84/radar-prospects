@@ -1,1 +1,1 @@
-Conserver uniquement .git, supprimer le reste, copier le ZIP. Commit conseillé : V7.1b - Fiche 360 et CRM
+Conserver uniquement .git, supprimer le reste, copier le ZIP. Commit conseillé : V7.2a - Source SIRENE

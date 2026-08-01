@@ -204,7 +204,12 @@ def append_history(new_signals: int, added: int, modified: int, errors: list[str
         HISTORY, index=False, encoding="utf-8-sig"
     )
 
+def run_sirene_connector() -> None:
+    from collect_sirene import main as collect_sirene
+    collect_sirene()
+
 def main() -> None:
+    run_sirene_connector()
     collected, errors = collect_signals()
     merged, new = merge_signals(collected)
     merged.to_csv(SIGNALS, index=False, encoding="utf-8-sig")
@@ -239,8 +244,6 @@ def main() -> None:
     rebuild_status(len(new), errors)
     from rebuild_intelligence import rebuild as rebuild_intelligence
     rebuild_intelligence()
-    from rebuild_crm import rebuild as rebuild_crm
-    rebuild_crm()
 
     print(
         f"Veille terminée: {len(new)} nouveaux signaux, "
