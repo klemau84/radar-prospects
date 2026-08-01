@@ -1,46 +1,14 @@
-# Radar prospects boissons — 06, 83 & Monaco · V4.1
+# Radar CHR — V5.1
 
-Radar Streamlit couvrant les projets avant ouverture dans les Alpes-Maritimes, le Var et Monaco, avec suivi territorial et arbitrage des nouvelles gammes.
+Ajouts :
 
-## Fonctionnalités
+- version des données ;
+- date du dernier signal intégré ;
+- date du dernier balayage territorial ;
+- dernières nouveautés mises en évidence ;
+- fraîcheur par territoire ;
+- inventaire des fichiers ;
+- historique des mises à jour ;
+- rappel explicite que l'actualisation n'est pas automatique.
 
-- filtres par département, stade, horizon et confiance ;
-- tableau de bord des signaux prioritaires ;
-- qualification des ouvertures, reprises et transformations ;
-- ajout manuel et import/export CSV ;
-- bibliothèque de sources et de requêtes de veille ;
-- correspondance entre concepts détectés et familles du catalogue.
-- matrice modifiable des opportunités produits et export de l'arbitrage ;
-- suivi de la couverture commune par commune dans le 06, le 83 et à Monaco ;
-
-Le jeu initial contient uniquement des établissements réels accompagnés d'une source publique. Les projets dont l'ouverture ou l'activité actuelle n'a pas été confirmée sont explicitement marqués à revalider.
-
-## Lancer localement
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-streamlit run app.py
-```
-
-## Déployer sur Streamlit Community Cloud
-
-1. Créer un dépôt GitHub et y pousser les fichiers.
-2. Dans Streamlit Community Cloud, sélectionner le dépôt et la branche.
-3. Choisir `app.py` comme fichier principal.
-4. Déployer.
-
-## Format d'import
-
-L'onglet **Importer / ajouter** permet de télécharger un modèle CSV vide. La pré-version conserve les ajouts en mémoire pendant la session ; une base persistante sera ajoutée après validation de la structure.
-
-## Suite proposée
-
-- connecteurs de veille RSS et recherche web ;
-- dédoublonnage par établissement, adresse et exploitant ;
-- historique des changements et alertes ;
-- validation humaine des signaux ;
-- stockage persistant ;
-- enrichissement SIRENE/RNE/BODACC.
-- remplacement des hypothèses de marge par les tarifs et conditions réels des fournisseurs.
+Génération UTC : 2026-08-01T13:38:23Z

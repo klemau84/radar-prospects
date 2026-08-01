@@ -11,7 +11,12 @@ ROOT = Path(__file__).parent
 DATA_FILE = ROOT / "data" / "prospects.csv"
 PRODUCT_FILE = ROOT / "data" / "opportunites_produits.csv"
 TERRITORY_FILE = ROOT / "data" / "territoires.csv"
-DATA_VERSION = "4.1.0"
+METADATA_FILE = ROOT / "data" / "metadonnees_application.csv"
+DATA_STATUS_FILE = ROOT / "data" / "etat_donnees.csv"
+ZONE_STATUS_FILE = ROOT / "data" / "etat_zones.csv"
+LATEST_FILE = ROOT / "data" / "dernieres_nouveautes.csv"
+UPDATE_HISTORY_FILE = ROOT / "data" / "historique_mises_a_jour.csv"
+DATA_VERSION = "5.1.0"
 
 STAGES = ["Projet annoncé", "Autorisation", "Travaux", "Recrutement", "Préouverture", "Ouvert", "Reprise", "À vérifier"]
 HORIZONS = ["A — moins de 3 mois", "B — 3 à 6 mois", "C — plus de 6 mois", "D — date inconnue", "E — ouvert récemment", "R — reprise / transformation"]
@@ -56,6 +61,21 @@ def load_product_opportunities() -> pd.DataFrame:
 def load_territories() -> pd.DataFrame:
     return pd.read_csv(TERRITORY_FILE, dtype={"territoire": str})
 
+def load_metadata() -> pd.DataFrame:
+    return pd.read_csv(METADATA_FILE)
+
+def load_data_status() -> pd.DataFrame:
+    return pd.read_csv(DATA_STATUS_FILE)
+
+def load_zone_status() -> pd.DataFrame:
+    return pd.read_csv(ZONE_STATUS_FILE, dtype={"territoire": str})
+
+def load_latest_signals() -> pd.DataFrame:
+    return pd.read_csv(LATEST_FILE, dtype={"departement": str})
+
+def load_update_history() -> pd.DataFrame:
+    return pd.read_csv(UPDATE_HISTORY_FILE)
+
 
 def prepare(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
@@ -71,14 +91,36 @@ if st.session_state.get("data_version") != DATA_VERSION:
     st.session_state.prospects = prepare(load_prospects())
     st.session_state.product_opportunities = load_product_opportunities()
     st.session_state.territories = load_territories()
+    st.session_state.metadata = load_metadata()
+    st.session_state.data_status = load_data_status()
+    st.session_state.zone_status = load_zone_status()
+    st.session_state.latest_signals = load_latest_signals()
+    st.session_state.update_history = load_update_history()
     st.session_state.data_version = DATA_VERSION
 
 df = st.session_state.prospects
 products_df = st.session_state.product_opportunities
 territories_df = st.session_state.territories
+metadata_df = st.session_state.metadata
+data_status_df = st.session_state.data_status
+zone_status_df = st.session_state.zone_status
+latest_signals_df = st.session_state.latest_signals
+update_history_df = st.session_state.update_history
+metadata_map = dict(zip(metadata_df["cle"], metadata_df["valeur"])) if not metadata_df.empty else {}
 
 st.title("Radar prospects boissons · 06 & 83")
 st.caption("Détecter les ouvertures, reprises et nouveaux concepts avant leur présence dans les annuaires classiques.")
+
+with st.container(border=True):
+    u1, u2, u3, u4 = st.columns(4)
+    u1.metric("Version des données", metadata_map.get("version_application", "V5.1"))
+    u2.metric("Dernier signal intégré", metadata_map.get("dernier_signal_publication", "N/D"))
+    u3.metric("Dernier balayage", metadata_map.get("dernier_balayage_territorial", "N/D"))
+    u4.metric("Actualisation automatique", metadata_map.get("actualisation_automatique", "Non"))
+    st.caption(
+        "Les dates correspondent aux fichiers actuellement intégrés. "
+        "Un redémarrage Streamlit ne lance pas de nouvelle recherche."
+    )
 
 with st.sidebar:
     st.header("Filtres")
@@ -88,7 +130,7 @@ with st.sidebar:
     min_confidence = st.slider("Confiance minimale", 0, 100, 40, 5)
     search = st.text_input("Recherche libre", placeholder="rooftop, Cannes, hôtel…")
     st.divider()
-    st.caption("V4 · projets avant ouverture et arbitrage des nouvelles gammes selon potentiel, marge probable et effort de référencement.")
+    st.caption("V5.1 · veille CHR, fraîcheur des données et arbitrage des opportunités produits.")
 
 filtered = df[
     df["departement"].isin(departments)
@@ -100,11 +142,26 @@ if search:
     mask = filtered.astype(str).apply(lambda col: col.str.contains(search, case=False, na=False)).any(axis=1)
     filtered = filtered[mask]
 
-tab_dashboard, tab_radar, tab_coverage, tab_products, tab_archive, tab_import, tab_sources, tab_catalogue = st.tabs(
-    ["Avant ouverture", "Projets", "Couverture territoriale", "Opportunités produits", "Ouverts / archive", "Importer / ajouter", "Sources & requêtes", "Tendances & catalogue"]
+tab_dashboard, tab_radar, tab_coverage, tab_products, tab_archive, tab_import, tab_status, tab_sources, tab_catalogue = st.tabs(
+    ["Avant ouverture", "Projets", "Couverture territoriale", "Opportunités produits", "Ouverts / archive", "Importer / ajouter", "État des données", "Sources & requêtes", "Tendances & catalogue"]
 )
 
 with tab_dashboard:
+    st.subheader("Dernières données intégrées")
+    recent = latest_signals_df.head(5).copy()
+    if recent.empty:
+        st.info("Aucune nouveauté enregistrée.")
+    else:
+        for _, row in recent.iterrows():
+            st.markdown(
+                f"<div class='signal'><b>{row['etablissement']}</b> · "
+                f"{row['commune']} ({row['departement']})"
+                f"<br>{row['type_concept']} — <b>{row['stade']}</b>"
+                f"<br><span class='muted'>Publication {row['date_publication']} · "
+                f"confiance {row['indice_confiance']}%</span></div>",
+                unsafe_allow_html=True,
+            )
+
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Projets visibles", len(filtered))
     c2.metric("Ouvertures < 3 mois", int((filtered["horizon"] == HORIZONS[0]).sum()))
@@ -267,6 +324,41 @@ with tab_import:
                 })
                 st.session_state.prospects = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
                 st.success("Signal ajouté.")
+
+
+with tab_status:
+    st.subheader("État général des données")
+    s1, s2, s3, s4 = st.columns(4)
+    s1.metric("Prospects", metadata_map.get("nombre_prospects", "0"))
+    s2.metric("Avant ouverture", metadata_map.get("nombre_projets_avant_ouverture", "0"))
+    s3.metric("Communes suivies", metadata_map.get("nombre_communes_suivies", "0"))
+    s4.metric("Gammes analysées", metadata_map.get("nombre_gammes_analysees", "0"))
+
+    st.subheader("Fraîcheur par territoire")
+    st.dataframe(
+        zone_status_df.sort_values(["jours_depuis_maj", "territoire"], na_position="last"),
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    st.subheader("Inventaire des fichiers")
+    st.dataframe(
+        data_status_df,
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    st.subheader("Historique des mises à jour")
+    st.dataframe(
+        update_history_df.sort_values("date_utc", ascending=False),
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    st.info(
+        "La date de génération du ZIP ne prouve pas qu'un balayage externe a été effectué. "
+        "Les nouveautés correspondent uniquement aux lignes présentes dans prospects.csv."
+    )
 
 with tab_sources:
     st.subheader("Canaux de détection")

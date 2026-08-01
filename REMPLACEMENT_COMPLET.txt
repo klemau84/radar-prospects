@@ -1,0 +1,1 @@
+Conserver uniquement .git dans le dossier local, supprimer les autres fichiers, puis copier l'intégralité du ZIP. Commit conseillé : V5.1 - Fraîcheur des données
