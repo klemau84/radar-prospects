@@ -16,7 +16,9 @@ DATA_STATUS_FILE = ROOT / "data" / "etat_donnees.csv"
 ZONE_STATUS_FILE = ROOT / "data" / "etat_zones.csv"
 LATEST_FILE = ROOT / "data" / "dernieres_nouveautes.csv"
 UPDATE_HISTORY_FILE = ROOT / "data" / "historique_mises_a_jour.csv"
-DATA_VERSION = "5.1.0"
+WEEKLY_SIGNALS_FILE = ROOT / "data" / "signaux_hebdo.csv"
+NEW_SIGNALS_FILE = ROOT / "data" / "nouveaux_signaux.csv"
+DATA_VERSION = "5.2.0"
 
 STAGES = ["Projet annoncé", "Autorisation", "Travaux", "Recrutement", "Préouverture", "Ouvert", "Reprise", "À vérifier"]
 HORIZONS = ["A — moins de 3 mois", "B — 3 à 6 mois", "C — plus de 6 mois", "D — date inconnue", "E — ouvert récemment", "R — reprise / transformation"]
@@ -76,6 +78,12 @@ def load_latest_signals() -> pd.DataFrame:
 def load_update_history() -> pd.DataFrame:
     return pd.read_csv(UPDATE_HISTORY_FILE)
 
+def load_weekly_signals() -> pd.DataFrame:
+    return pd.read_csv(WEEKLY_SIGNALS_FILE, dtype={"territoire": str})
+
+def load_new_signals() -> pd.DataFrame:
+    return pd.read_csv(NEW_SIGNALS_FILE, dtype={"territoire": str})
+
 
 def prepare(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
@@ -96,6 +104,8 @@ if st.session_state.get("data_version") != DATA_VERSION:
     st.session_state.zone_status = load_zone_status()
     st.session_state.latest_signals = load_latest_signals()
     st.session_state.update_history = load_update_history()
+    st.session_state.weekly_signals = load_weekly_signals()
+    st.session_state.new_signals = load_new_signals()
     st.session_state.data_version = DATA_VERSION
 
 df = st.session_state.prospects
@@ -106,6 +116,8 @@ data_status_df = st.session_state.data_status
 zone_status_df = st.session_state.zone_status
 latest_signals_df = st.session_state.latest_signals
 update_history_df = st.session_state.update_history
+weekly_signals_df = st.session_state.weekly_signals
+new_signals_df = st.session_state.new_signals
 metadata_map = dict(zip(metadata_df["cle"], metadata_df["valeur"])) if not metadata_df.empty else {}
 
 st.title("Radar prospects boissons · 06 & 83")
@@ -116,10 +128,10 @@ with st.container(border=True):
     u1.metric("Version des données", metadata_map.get("version_application", "V5.1"))
     u2.metric("Dernier signal intégré", metadata_map.get("dernier_signal_publication", "N/D"))
     u3.metric("Dernier balayage", metadata_map.get("dernier_balayage_territorial", "N/D"))
-    u4.metric("Actualisation automatique", metadata_map.get("actualisation_automatique", "Non"))
+    u4.metric("Veille automatique", metadata_map.get("actualisation_automatique", "Hebdomadaire"))
     st.caption(
-        "Les dates correspondent aux fichiers actuellement intégrés. "
-        "Un redémarrage Streamlit ne lance pas de nouvelle recherche."
+        "La veille GitHub Actions recherche de nouveaux signaux chaque lundi. "
+        "Ces signaux restent à qualifier avant d'entrer dans la base des prospects."
     )
 
 with st.sidebar:
@@ -130,7 +142,7 @@ with st.sidebar:
     min_confidence = st.slider("Confiance minimale", 0, 100, 40, 5)
     search = st.text_input("Recherche libre", placeholder="rooftop, Cannes, hôtel…")
     st.divider()
-    st.caption("V5.1 · veille CHR, fraîcheur des données et arbitrage des opportunités produits.")
+    st.caption("V5.2 · veille hebdomadaire automatisée et qualification des nouveaux signaux.")
 
 filtered = df[
     df["departement"].isin(departments)
@@ -142,8 +154,8 @@ if search:
     mask = filtered.astype(str).apply(lambda col: col.str.contains(search, case=False, na=False)).any(axis=1)
     filtered = filtered[mask]
 
-tab_dashboard, tab_radar, tab_coverage, tab_products, tab_archive, tab_import, tab_status, tab_sources, tab_catalogue = st.tabs(
-    ["Avant ouverture", "Projets", "Couverture territoriale", "Opportunités produits", "Ouverts / archive", "Importer / ajouter", "État des données", "Sources & requêtes", "Tendances & catalogue"]
+tab_dashboard, tab_radar, tab_coverage, tab_products, tab_archive, tab_import, tab_signals, tab_status, tab_sources, tab_catalogue = st.tabs(
+    ["Avant ouverture", "Projets", "Couverture territoriale", "Opportunités produits", "Ouverts / archive", "Importer / ajouter", "Signaux hebdo", "État des données", "Sources & requêtes", "Tendances & catalogue"]
 )
 
 with tab_dashboard:
@@ -326,13 +338,61 @@ with tab_import:
                 st.success("Signal ajouté.")
 
 
+
+with tab_signals:
+    st.subheader("Nouveaux signaux détectés automatiquement")
+    n1, n2, n3 = st.columns(3)
+    n1.metric("Nouveaux au dernier passage", len(new_signals_df))
+    n2.metric("Total à qualifier", len(weekly_signals_df))
+    n3.metric(
+        "Dernier passage automatique",
+        metadata_map.get("dernier_passage_automatique_utc", "Pas encore exécuté"),
+    )
+
+    st.warning(
+        "Un signal RSS n'est pas un prospect confirmé. Vérifie la source, "
+        "le lieu, le calendrier et l'exploitant avant de l'ajouter à prospects.csv."
+    )
+
+    if new_signals_df.empty:
+        st.info(
+            "Aucun passage automatique n'a encore été exécuté depuis cette livraison, "
+            "ou aucun nouveau signal n'a été trouvé."
+        )
+    else:
+        st.dataframe(
+            new_signals_df[
+                ["date_publication", "territoire", "zone", "theme",
+                 "titre", "source", "url", "statut_qualification"]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.subheader("Tous les signaux à qualifier")
+    st.dataframe(
+        weekly_signals_df,
+        use_container_width=True,
+        hide_index=True,
+    )
+
 with tab_status:
     st.subheader("État général des données")
     s1, s2, s3, s4 = st.columns(4)
     s1.metric("Prospects", metadata_map.get("nombre_prospects", "0"))
     s2.metric("Avant ouverture", metadata_map.get("nombre_projets_avant_ouverture", "0"))
     s3.metric("Communes suivies", metadata_map.get("nombre_communes_suivies", "0"))
-    s4.metric("Gammes analysées", metadata_map.get("nombre_gammes_analysees", "0"))
+    s4.metric("Signaux à qualifier", metadata_map.get("nombre_signaux_a_qualifier", str(len(weekly_signals_df))))
+
+    st.subheader("Automatisation hebdomadaire")
+    a1, a2, a3 = st.columns(3)
+    a1.metric("Fréquence", "Chaque lundi")
+    a2.metric("Nouveaux signaux", metadata_map.get("nouveaux_signaux_dernier_passage", "0"))
+    a3.metric("Erreurs du dernier passage", metadata_map.get("erreurs_dernier_passage", "0"))
+    st.caption(
+        "Le workflow `.github/workflows/veille_hebdomadaire.yml` peut aussi être "
+        "lancé manuellement depuis l'onglet Actions de GitHub."
+    )
 
     st.subheader("Fraîcheur par territoire")
     st.dataframe(

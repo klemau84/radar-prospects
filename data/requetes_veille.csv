@@ -1,0 +1,14 @@
+﻿territoire,zone,requete,theme,priorite
+06,Alpes-Maritimes,"""ouverture"" restaurant OR hôtel OR bar Alpes-Maritimes",CHR général,1
+06,Nice,"""ouverture"" restaurant OR bar OR rooftop Nice",Nice,1
+06,Cannes,"""ouverture"" restaurant OR hôtel OR plage Cannes",Cannes,1
+06,Antibes,"""ouverture"" restaurant OR hôtel OR bar Antibes",Antibes,1
+06,Menton,"""ouverture"" restaurant OR hôtel OR bar Menton",Menton,1
+83,Var,"""ouverture"" restaurant OR hôtel OR bar Var",CHR général,1
+83,Toulon,"""ouverture"" restaurant OR bar OR hôtel Toulon",Toulon,1
+83,Saint-Tropez,"""ouverture"" restaurant OR plage OR hôtel Saint-Tropez",Saint-Tropez,1
+83,Hyères,"""ouverture"" restaurant OR plage OR hôtel Hyères",Hyères,1
+83,Fréjus Saint-Raphaël,"""ouverture"" restaurant OR hôtel Fréjus Saint-Raphaël",Est Var,1
+MC,Monaco,"""ouverture"" restaurant OR hôtel OR bar Monaco",Monaco,1
+06-83-MC,Région,"""permis de construire"" hôtel OR restaurant Côte d’Azur",Urbanisme,2
+06-83-MC,Région,"recrute ""responsable de bar"" OR ""chef de rang"" ouverture Côte d’Azur",Recrutement,2
