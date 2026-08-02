@@ -6,6 +6,8 @@ dernier_signal_publication,2026-06-29
 dernier_balayage_territorial,2026-07-13
 nombre_prospects,43
 nombre_projets_avant_ouverture,14
+nombre_contacts,12
+nombre_prospects_avec_contact,12
 nombre_territoires,3
 nombre_communes_suivies,52
 nombre_gammes_analysees,14
@@ -16,6 +18,6 @@ erreurs_dernier_passage,0
 moteur_scoring,Actif
 moteur_fusion,Actif
 nombre_prospects_scores,43
-version_application,V7.2a
+version_application,V7.3
 source_sirene,Active après premier workflow
 codes_naf_surveilles,8

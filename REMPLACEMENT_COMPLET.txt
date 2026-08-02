@@ -1,1 +1,1 @@
-Conserver uniquement .git, supprimer le reste, copier le ZIP. Commit conseillé : V7.2a - Source SIRENE
+Conserver uniquement .git, supprimer le reste, copier le ZIP. Commit conseillé : V7.3 - Contacts prospects publics et sourcés

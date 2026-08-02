@@ -9,6 +9,7 @@ import streamlit as st
 
 ROOT = Path(__file__).parent
 DATA_FILE = ROOT / "data" / "prospects.csv"
+CONTACTS_FILE = ROOT / "data" / "contacts.csv"
 PRODUCT_FILE = ROOT / "data" / "opportunites_produits.csv"
 TERRITORY_FILE = ROOT / "data" / "territoires.csv"
 METADATA_FILE = ROOT / "data" / "metadonnees_application.csv"
@@ -26,13 +27,13 @@ SCORING_RULES_FILE = ROOT / "data" / "scoring_rules.csv"
 SIRENE_SIGNALS_FILE = ROOT / "data" / "signaux_sirene.csv"
 SIRENE_NEW_FILE = ROOT / "data" / "nouveaux_signaux_sirene.csv"
 NAF_CHR_FILE = ROOT / "data" / "naf_chr.csv"
-DATA_VERSION = "7.2a"
+DATA_VERSION = "7.3.0"
 
 STAGES = ["Projet annoncé", "Autorisation", "Travaux", "Recrutement", "Préouverture", "Ouvert", "Reprise", "À vérifier"]
 HORIZONS = ["A — moins de 3 mois", "B — 3 à 6 mois", "C — plus de 6 mois", "D — date inconnue", "E — ouvert récemment", "R — reprise / transformation"]
 
 
-st.set_page_config(page_title="Radar CHR 06/83", page_icon="📡", layout="wide")
+st.set_page_config(page_title="Radar CHR 06/83/Monaco", page_icon="📡", layout="wide")
 
 st.markdown(
     """
@@ -64,6 +65,20 @@ st.markdown(
 
 def load_prospects() -> pd.DataFrame:
     return pd.read_csv(DATA_FILE, dtype={"departement": str})
+
+def load_contacts() -> pd.DataFrame:
+    columns = [
+        "contact_id", "prospect_id", "etablissement", "contact_nom", "fonction",
+        "organisation", "telephone", "email", "type_contact", "source_url",
+        "date_verification", "niveau_fiabilite", "notes",
+    ]
+    if not CONTACTS_FILE.exists():
+        return pd.DataFrame(columns=columns)
+    contacts = pd.read_csv(CONTACTS_FILE, dtype=str).fillna("")
+    for column in columns:
+        if column not in contacts.columns:
+            contacts[column] = ""
+    return contacts[columns]
 
 def load_product_opportunities() -> pd.DataFrame:
     return pd.read_csv(PRODUCT_FILE)
@@ -129,6 +144,7 @@ def prepare(df: pd.DataFrame) -> pd.DataFrame:
 
 if st.session_state.get("data_version") != DATA_VERSION:
     st.session_state.prospects = prepare(load_prospects())
+    st.session_state.contacts = load_contacts()
     st.session_state.product_opportunities = load_product_opportunities()
     st.session_state.territories = load_territories()
     st.session_state.metadata = load_metadata()
@@ -149,6 +165,7 @@ if st.session_state.get("data_version") != DATA_VERSION:
     st.session_state.data_version = DATA_VERSION
 
 df = st.session_state.prospects
+contacts_df = st.session_state.contacts
 products_df = st.session_state.product_opportunities
 territories_df = st.session_state.territories
 metadata_df = st.session_state.metadata
@@ -168,7 +185,7 @@ sirene_new_df = st.session_state.sirene_new
 naf_chr_df = st.session_state.naf_chr
 metadata_map = dict(zip(metadata_df["cle"], metadata_df["valeur"])) if not metadata_df.empty else {}
 
-st.title("Radar prospects boissons · 06 & 83")
+st.title("Radar prospects boissons · 06, 83 & Monaco")
 st.caption("Détecter les ouvertures, reprises et nouveaux concepts avant leur présence dans les annuaires classiques.")
 
 with st.container(border=True):
@@ -188,9 +205,10 @@ with st.sidebar:
     selected_stages = st.multiselect("Stade", STAGES, default=[s for s in STAGES if s != "Ouvert"])
     selected_horizons = st.multiselect("Horizon", HORIZONS, default=HORIZONS)
     min_confidence = st.slider("Confiance minimale", 0, 100, 40, 5)
+    contact_only = st.checkbox("Avec contact identifié uniquement", value=False)
     search = st.text_input("Recherche libre", placeholder="rooftop, Cannes, hôtel…")
     st.divider()
-    st.caption("V7.2a · créations CHR issues de SIRENE et veille hebdomadaire.")
+    st.caption("V7.3 · contacts publics sourcés, créations SIRENE et veille hebdomadaire.")
 
 filtered = df[
     df["departement"].isin(departments)
@@ -198,12 +216,22 @@ filtered = df[
     & df["horizon"].isin(selected_horizons)
     & (df["indice_confiance"] >= min_confidence)
 ].copy()
+if contact_only:
+    filtered = filtered[filtered["prospect_id"].isin(set(contacts_df["prospect_id"]))]
 if search:
     mask = filtered.astype(str).apply(lambda col: col.str.contains(search, case=False, na=False)).any(axis=1)
-    filtered = filtered[mask]
+    contact_matches = set(
+        contacts_df.loc[
+            contacts_df.astype(str).apply(
+                lambda col: col.str.contains(search, case=False, na=False)
+            ).any(axis=1),
+            "prospect_id",
+        ]
+    )
+    filtered = filtered[mask | filtered["prospect_id"].isin(contact_matches)]
 
-tab_dashboard, tab_radar, tab_priority, tab_intelligence, tab_sirene, tab_coverage, tab_products, tab_archive, tab_import, tab_signals, tab_status, tab_sources, tab_catalogue = st.tabs(
-    ["Avant ouverture", "Projets", "À traiter", "Intelligence", "Créations SIRENE", "Couverture territoriale", "Opportunités produits", "Ouverts / archive", "Importer / ajouter", "Signaux hebdo", "État des données", "Sources & requêtes", "Tendances & catalogue"]
+tab_dashboard, tab_radar, tab_priority, tab_contacts, tab_intelligence, tab_sirene, tab_coverage, tab_products, tab_archive, tab_import, tab_signals, tab_status, tab_sources, tab_catalogue = st.tabs(
+    ["Avant ouverture", "Projets", "À traiter", "Contacts", "Intelligence", "Créations SIRENE", "Couverture territoriale", "Opportunités produits", "Ouverts / archive", "Importer / ajouter", "Signaux hebdo", "État des données", "Sources & requêtes", "Tendances & catalogue"]
 )
 
 with tab_dashboard:
@@ -222,11 +250,12 @@ with tab_dashboard:
                 unsafe_allow_html=True,
             )
 
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2, c3, c4, c5 = st.columns(5)
     c1.metric("Projets visibles", len(filtered))
     c2.metric("Ouvertures < 3 mois", int((filtered["horizon"] == HORIZONS[0]).sum()))
     c3.metric("En travaux / recrutement", int(filtered["stade"].isin(["Travaux", "Recrutement", "Préouverture"]).sum()))
     c4.metric("Confiance moyenne", f"{filtered['indice_confiance'].mean():.0f}%" if len(filtered) else "—")
+    c5.metric("Avec contact", int(filtered["prospect_id"].isin(set(contacts_df["prospect_id"])).sum()))
 
     st.subheader("À traiter en priorité")
     priority = filtered.sort_values(["indice_confiance", "date_publication"], ascending=[False, False]).head(6)
@@ -235,10 +264,18 @@ with tab_dashboard:
     for _, row in priority.iterrows():
         opening = row["date_ouverture_estimee"]
         opening_text = opening.strftime("%d/%m/%Y") if pd.notna(opening) else "date inconnue"
+        project_contacts = contacts_df[contacts_df["prospect_id"] == row["prospect_id"]]
+        contact_text = ""
+        if not project_contacts.empty:
+            contact = project_contacts.iloc[0]
+            identity = contact["contact_nom"] or contact["fonction"] or contact["organisation"]
+            details = " · ".join(value for value in [contact["telephone"], contact["email"]] if value)
+            contact_text = f"<br><span class='muted'>Contact : {identity}{' · ' + details if details else ''}</span>"
         st.markdown(
             f"<div class='signal'><b>{row['etablissement']}</b> · {row['commune']} ({row['departement']})"
             f"<br>{row['type_concept']} — <b>{row['stade']}</b> — ouverture {opening_text}"
-            f"<br><span class='muted'>{row['signal']} · confiance {row['indice_confiance']}%</span></div>",
+            f"<br><span class='muted'>{row['signal']} · confiance {row['indice_confiance']}%</span>"
+            f"{contact_text}</div>",
             unsafe_allow_html=True,
         )
 
@@ -252,11 +289,15 @@ with tab_dashboard:
 
 with tab_radar:
     st.subheader("Projets avant ouverture")
+    primary_contacts = contacts_df.drop_duplicates("prospect_id")[
+        ["prospect_id", "contact_nom", "fonction", "telephone", "email"]
+    ].rename(columns={"fonction": "fonction_contact"})
     display_columns = [
         "etablissement", "commune", "departement", "type_concept", "niche", "stade", "horizon",
-        "date_ouverture_estimee", "signal", "familles_produits", "indice_confiance", "source_url", "statut_donnee"
+        "date_ouverture_estimee", "contact_nom", "fonction_contact", "telephone", "email",
+        "signal", "familles_produits", "indice_confiance", "source_url", "statut_donnee"
     ]
-    shown = filtered.sort_values(
+    shown = filtered.merge(primary_contacts, on="prospect_id", how="left").sort_values(
         ["indice_confiance", "date_publication"], ascending=[False, False]
     )[display_columns]
     st.dataframe(
@@ -325,6 +366,114 @@ with tab_priority:
         "Le score sert à ordonner le travail commercial. "
         "La probabilité affichée est un indicateur interne, pas une probabilité statistique."
     )
+
+with tab_contacts:
+    st.subheader("Contacts publics associés aux prospects")
+    st.caption(
+        "Coordonnées professionnelles trouvées dans des sources publiques. "
+        "Le niveau de fiabilité porte sur la coordonnée, pas sur le pouvoir de décision achats."
+    )
+
+    projects_with_contacts = set(contacts_df["prospect_id"])
+    preopening = df[df["stade"] != "Ouvert"].copy()
+    k1, k2, k3, k4 = st.columns(4)
+    k1.metric("Projets avec contact", preopening["prospect_id"].isin(projects_with_contacts).sum())
+    k2.metric("Personnes nommées", int(contacts_df["contact_nom"].ne("").sum()))
+    k3.metric("Téléphones", int(contacts_df["telephone"].ne("").sum()))
+    k4.metric("E-mails", int(contacts_df["email"].ne("").sum()))
+
+    f1, f2 = st.columns(2)
+    contact_types = f1.multiselect(
+        "Type de contact",
+        sorted(value for value in contacts_df["type_contact"].unique() if value),
+    )
+    reliability = f2.multiselect(
+        "Fiabilité",
+        sorted(value for value in contacts_df["niveau_fiabilite"].unique() if value),
+    )
+    contact_view = contacts_df.copy()
+    if contact_types:
+        contact_view = contact_view[contact_view["type_contact"].isin(contact_types)]
+    if reliability:
+        contact_view = contact_view[contact_view["niveau_fiabilite"].isin(reliability)]
+
+    st.dataframe(
+        contact_view[
+            ["etablissement", "contact_nom", "fonction", "organisation", "telephone",
+             "email", "type_contact", "niveau_fiabilite", "date_verification",
+             "source_url", "notes"]
+        ],
+        use_container_width=True,
+        hide_index=True,
+        column_config={"source_url": st.column_config.LinkColumn("Source")},
+    )
+    st.download_button(
+        "Télécharger les contacts CSV",
+        contact_view.to_csv(index=False).encode("utf-8-sig"),
+        f"contacts_prospects_{date.today().isoformat()}.csv",
+        "text/csv",
+    )
+
+    st.subheader("Contacts restant à identifier")
+    missing_contacts = preopening[~preopening["prospect_id"].isin(projects_with_contacts)]
+    st.dataframe(
+        missing_contacts[["prospect_id", "etablissement", "commune", "departement", "stade"]],
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    with st.expander("Ajouter un contact pendant cette session"):
+        st.info(
+            "L'ajout reste dans la session Streamlit. Téléchargez ensuite le CSV pour "
+            "remplacer data/contacts.csv dans GitHub."
+        )
+        project_options = {
+            f"{row.etablissement} · {row.commune} ({row.departement})": row.prospect_id
+            for row in df.itertuples()
+        }
+        with st.form("add_contact", clear_on_submit=True):
+            project_label = st.selectbox("Prospect *", list(project_options))
+            a, b = st.columns(2)
+            contact_name = a.text_input("Nom du contact")
+            contact_role = b.text_input("Fonction")
+            organisation = a.text_input("Organisation")
+            phone = b.text_input("Téléphone")
+            email = a.text_input("E-mail")
+            contact_type = b.text_input("Type de contact", placeholder="Direction, groupe, autorité projet…")
+            contact_source = st.text_input("URL de la source publique *")
+            contact_reliability = a.selectbox("Fiabilité", ["Élevée", "Moyenne", "Faible"])
+            contact_note = st.text_area("Notes")
+            add_contact = st.form_submit_button("Ajouter le contact", type="primary")
+            if add_contact:
+                if not contact_source or not any([contact_name, phone, email]):
+                    st.error("Ajoutez une source et au moins un nom, un téléphone ou un e-mail.")
+                else:
+                    prospect_id = project_options[project_label]
+                    project = df[df["prospect_id"] == prospect_id].iloc[0]
+                    numeric_ids = pd.to_numeric(
+                        contacts_df["contact_id"].str.extract(r"(\d+)", expand=False),
+                        errors="coerce",
+                    )
+                    next_number = int(numeric_ids.max()) + 1 if numeric_ids.notna().any() else 1
+                    new_contact = {
+                        "contact_id": f"C-{next_number:04d}",
+                        "prospect_id": prospect_id,
+                        "etablissement": project["etablissement"],
+                        "contact_nom": contact_name,
+                        "fonction": contact_role,
+                        "organisation": organisation,
+                        "telephone": phone,
+                        "email": email,
+                        "type_contact": contact_type,
+                        "source_url": contact_source,
+                        "date_verification": date.today().isoformat(),
+                        "niveau_fiabilite": contact_reliability,
+                        "notes": contact_note,
+                    }
+                    st.session_state.contacts = pd.concat(
+                        [contacts_df, pd.DataFrame([new_contact])], ignore_index=True
+                    )
+                    st.success("Contact ajouté à la session.")
 
 with tab_intelligence:
     st.subheader("Règles de scoring")
@@ -501,11 +650,12 @@ with tab_signals:
 
 with tab_status:
     st.subheader("État général des données")
-    s1, s2, s3, s4 = st.columns(4)
+    s1, s2, s3, s4, s5 = st.columns(5)
     s1.metric("Prospects", metadata_map.get("nombre_prospects", "0"))
     s2.metric("Avant ouverture", metadata_map.get("nombre_projets_avant_ouverture", "0"))
     s3.metric("Communes suivies", metadata_map.get("nombre_communes_suivies", "0"))
     s4.metric("Signaux à qualifier", metadata_map.get("nombre_signaux_a_qualifier", str(len(weekly_signals_df))))
+    s5.metric("Contacts", metadata_map.get("nombre_contacts", str(len(contacts_df))))
 
     st.subheader("Automatisation hebdomadaire")
     a1, a2, a3 = st.columns(3)
@@ -595,4 +745,4 @@ with tab_catalogue:
         ["No/low alcohol", "Bières 0,0 %, jus, sirops, tonics et eaux"],
     ], columns=["Usage détecté", "Familles du catalogue"])
     st.dataframe(catalogue, use_container_width=True, hide_index=True)
-    st.info("La V4 croise les 1 378 articles existants avec les tendances internationales et les opportunités de nouvelles gammes.")
+    st.info("Le radar croise les 1 378 articles existants avec les tendances internationales et les opportunités de nouvelles gammes.")

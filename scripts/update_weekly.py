@@ -18,6 +18,7 @@ DATA = BASE / "data"
 SNAPSHOTS = DATA / "snapshots"
 
 PROSPECTS = DATA / "prospects.csv"
+CONTACTS = DATA / "contacts.csv"
 TERRITORIES = DATA / "territoires.csv"
 QUERIES = DATA / "requetes_veille.csv"
 SIGNALS = DATA / "signaux_hebdo.csv"
@@ -54,7 +55,7 @@ def collect_signals() -> tuple[pd.DataFrame, list[str]]:
     collected = []
     errors = []
     session = requests.Session()
-    session.headers.update({"User-Agent": "RadarCHR/5.2 (+GitHub Actions)"})
+    session.headers.update({"User-Agent": "RadarCHR/7.3 (+GitHub Actions)"})
 
     for row in queries.itertuples(index=False):
         try:
@@ -142,6 +143,7 @@ def rebuild_status(new_signal_count: int, errors: list[str]) -> None:
     prospects = pd.read_csv(PROSPECTS, dtype={"departement": str})
     territories = pd.read_csv(TERRITORIES, dtype={"territoire": str})
     signals = safe_read(SIGNALS, dtype={"territoire": str})
+    contacts = safe_read(CONTACTS, dtype=str)
 
     prospects["date_publication"] = pd.to_datetime(
         prospects["date_publication"], errors="coerce"
@@ -155,13 +157,16 @@ def rebuild_status(new_signal_count: int, errors: list[str]) -> None:
     latest_manual_sweep = territories["derniere_recherche"].max()
 
     metadata = pd.DataFrame([
-        ["version_application", "V5.2"],
+        ["version_application", "V7.3"],
         ["date_generation_utc", NOW_ISO],
         ["actualisation_automatique", "Hebdomadaire"],
         ["dernier_passage_automatique_utc", NOW_ISO],
         ["dernier_signal_publication", latest_signal.date().isoformat() if pd.notna(latest_signal) else ""],
         ["dernier_balayage_territorial", latest_manual_sweep.date().isoformat() if pd.notna(latest_manual_sweep) else ""],
         ["nombre_prospects", str(len(prospects))],
+        ["nombre_projets_avant_ouverture", str((prospects["stade"] != "Ouvert").sum())],
+        ["nombre_contacts", str(len(contacts))],
+        ["nombre_prospects_avec_contact", str(contacts["prospect_id"].nunique() if "prospect_id" in contacts else 0)],
         ["nombre_signaux_a_qualifier", str(len(signals))],
         ["nouveaux_signaux_dernier_passage", str(new_signal_count)],
         ["erreurs_dernier_passage", str(len(errors))],
@@ -190,7 +195,7 @@ def append_history(new_signals: int, added: int, modified: int, errors: list[str
     history = safe_read(HISTORY)
     row = pd.DataFrame([{
         "date_utc": NOW_ISO,
-        "version": "V5.2",
+        "version": "V7.3",
         "type": "Veille hebdomadaire automatisée",
         "resultat": "Succès" if not errors else "Partiel",
         "nouveaux_prospects": added,
