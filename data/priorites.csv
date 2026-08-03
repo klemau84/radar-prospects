@@ -1,44 +1,44 @@
 ﻿prospect_id,etablissement,commune,departement,score_total,probabilite_ouverture_pct,priorite,nombre_signaux,nombre_sources,derniere_activite,methode_calcul,ordre_traitement
-P-0001,Palais de la Méditerranée - The Unbound Collection by Hyatt,Nice,06,167,33,Intéressant,0,0,2026-06-18,Score = signaux configurables + confiance existante + bonus de récence,1
-P-0013,La Réserve de Beaulieu,Beaulieu-sur-Mer,06,167,33,Intéressant,0,0,2026-03-04,Score = signaux configurables + confiance existante + bonus de récence,2
-P-0020,Shanael,Toulon,83,167,33,Intéressant,0,0,2025-11-10,Score = signaux configurables + confiance existante + bonus de récence,3
-P-0017,Hôtel du Couvent,Nice,06,167,33,Intéressant,0,0,2024-06-13,Score = signaux configurables + confiance existante + bonus de récence,4
-P-0021,Le Yen Toulon,Toulon,83,166,33,Intéressant,0,0,2026-05-29,Score = signaux configurables + confiance existante + bonus de récence,5
-P-0034,Hôtel Posidonia et restaurant Sacha,Nice,06,164,33,Intéressant,0,0,2026-02-18,Score = signaux configurables + confiance existante + bonus de récence,6
-P-0022,Durant la Joie,La Valette-du-Var,83,164,33,Intéressant,0,0,2025-12-01,Score = signaux configurables + confiance existante + bonus de récence,7
-P-0014,Villa Miraé,Antibes,06,164,33,Intéressant,0,0,2025-03-20,Score = signaux configurables + confiance existante + bonus de récence,8
-P-0003,Zannier Bendor,Bandol,83,162,32,Intéressant,0,0,2025-10-31,Score = signaux configurables + confiance existante + bonus de récence,9
-P-0004,Château Rose,Grimaud,83,162,32,Intéressant,0,0,2025-06-23,Score = signaux configurables + confiance existante + bonus de récence,10
-P-0027,La Sorga,Toulon,83,162,32,Intéressant,0,0,2025-06-09,Score = signaux configurables + confiance existante + bonus de récence,11
-P-0007,Le Paradis du Fruit,Nice,06,162,32,Intéressant,0,0,2025-03-27,Score = signaux configurables + confiance existante + bonus de récence,12
-P-0010,Pesca,Nice,06,162,32,Intéressant,0,0,2025-03-18,Score = signaux configurables + confiance existante + bonus de récence,13
-P-0023,Moelleuses et Persillées,Saint-Raphaël,83,161,32,Intéressant,0,0,2025-04-15,Score = signaux configurables + confiance existante + bonus de récence,14
-P-0025,Plagette,Saint-Aygulf,83,161,32,Intéressant,0,0,2025-03-06,Score = signaux configurables + confiance existante + bonus de récence,15
-P-0008,Carré d'Or,Nice,06,160,32,Intéressant,0,0,2025-03-14,Score = signaux configurables + confiance existante + bonus de récence,16
-P-0037,Plage Keller 2027,Antibes,06,158,32,Intéressant,0,0,2026-04-25,Score = signaux configurables + confiance existante + bonus de récence,17
-P-0005,Maison Mentone,Saint-Antonin-du-Var,83,158,32,Intéressant,0,0,2025-06-06,Score = signaux configurables + confiance existante + bonus de récence,18
-P-0016,Hôtel du Mirazur,Menton,06,158,32,Intéressant,0,0,2025-05-13,Score = signaux configurables + confiance existante + bonus de récence,19
-P-0002,La Réserve Estérel,Saint-Raphaël,83,155,31,Intéressant,0,0,2026-04-08,Score = signaux configurables + confiance existante + bonus de récence,20
-P-0026,Dolce,Toulon,83,155,31,Intéressant,0,0,2025-06-13,Score = signaux configurables + confiance existante + bonus de récence,21
-P-0006,Le Central,Nice,06,155,31,Intéressant,0,0,2025-05-20,Score = signaux configurables + confiance existante + bonus de récence,22
-P-0036,Projet hôtelier Pariente Saint-Tropez,Saint-Tropez,83,155,31,Intéressant,0,0,2024-12-03,Score = signaux configurables + confiance existante + bonus de récence,23
-P-0033,Milady,Toulon,83,155,31,Intéressant,0,0,2024-08-20,Score = signaux configurables + confiance existante + bonus de récence,24
-P-0031,Café Croisette,Sainte-Maxime,83,155,31,Intéressant,0,0,2024-08-07,Score = signaux configurables + confiance existante + bonus de récence,25
-P-0032,Ô Cargo,Fréjus,83,155,31,Intéressant,0,0,2024-05-17,Score = signaux configurables + confiance existante + bonus de récence,26
-P-0041,Nouvelle concession de la plage Mala,Cap-d'Ail,06,152,30,Intéressant,0,0,2026-06-29,Score = signaux configurables + confiance existante + bonus de récence,27
-P-0024,Nomadia,Sainte-Maxime,83,152,30,Intéressant,0,0,2026-04-01,Score = signaux configurables + confiance existante + bonus de récence,28
-P-0040,Bar Gustave - Hôtel Hermitage,Monaco,MC,152,30,Intéressant,0,0,2026-01-12,Score = signaux configurables + confiance existante + bonus de récence,29
-P-0011,Fira,Nice,06,152,30,Intéressant,0,0,2025-06-18,Score = signaux configurables + confiance existante + bonus de récence,30
-P-0029,Chez Péponne,La Londe-les-Maures,83,152,30,Intéressant,0,0,2025-06-11,Score = signaux configurables + confiance existante + bonus de récence,31
-P-0009,Grand Café des Fleurs,Nice,06,152,30,Intéressant,0,0,2025-04-18,Score = signaux configurables + confiance existante + bonus de récence,32
-P-0030,Thomel,Toulon,83,150,30,Intéressant,0,0,2024-11-14,Score = signaux configurables + confiance existante + bonus de récence,33
-P-0028,Lasagne Factory,Toulon,83,149,30,Intéressant,0,0,2025-08-01,Score = signaux configurables + confiance existante + bonus de récence,34
-P-0035,La Voile d'Or,Saint-Jean-Cap-Ferrat,06,146,29,Intéressant,0,0,2026-06-01,Score = signaux configurables + confiance existante + bonus de récence,35
-P-0039,Capitainerie et restaurant du port,Sainte-Maxime,83,143,29,Intéressant,0,0,2025-09-20,Score = signaux configurables + confiance existante + bonus de récence,36
-P-0015,Elaïo - Le Méridien Nice,Nice,06,143,29,Intéressant,0,0,2025-06-24,Score = signaux configurables + confiance existante + bonus de récence,37
-P-0042,Concessions de plage de la baie de Carnolès,Roquebrune-Cap-Martin,06,140,28,Intéressant,0,0,2026-02-09,Score = signaux configurables + confiance existante + bonus de récence,38
-P-0043,Embellissement du Vieux Port de Golfe-Juan,Golfe-Juan,06,137,27,Intéressant,0,0,2026-04-13,Score = signaux configurables + confiance existante + bonus de récence,39
-P-0018,Marmar,Nice,06,134,27,Intéressant,0,0,2025-02-20,Score = signaux configurables + confiance existante + bonus de récence,40
-P-0019,Mallard,Nice,06,134,27,Intéressant,0,0,2025-02-20,Score = signaux configurables + confiance existante + bonus de récence,41
-P-0012,African Queen Saint-Tropez,Saint-Tropez,83,132,26,Intéressant,0,0,2025-07-10,Score = signaux configurables + confiance existante + bonus de récence,42
-P-0038,Hôtel Riviera - Vignette Collection,Théoule-sur-Mer,06,128,26,Intéressant,0,0,2025-11-03,Score = signaux configurables + confiance existante + bonus de récence,43
+P-0001,Palais de la Méditerranée - The Unbound Collection by Hyatt,Nice,06,167,33,Intéressant,0,0,2026-06-18,Score configurable,1
+P-0017,Hôtel du Couvent,Nice,06,167,33,Intéressant,0,0,2024-06-13,Score configurable,2
+P-0013,La Réserve de Beaulieu,Beaulieu-sur-Mer,06,167,33,Intéressant,0,0,2026-03-04,Score configurable,3
+P-0020,Shanael,Toulon,83,167,33,Intéressant,0,0,2025-11-10,Score configurable,4
+P-0021,Le Yen Toulon,Toulon,83,166,33,Intéressant,0,0,2026-05-29,Score configurable,5
+P-0022,Durant la Joie,La Valette-du-Var,83,164,33,Intéressant,0,0,2025-12-01,Score configurable,6
+P-0014,Villa Miraé,Antibes,06,164,33,Intéressant,0,0,2025-03-20,Score configurable,7
+P-0034,Hôtel Posidonia et restaurant Sacha,Nice,06,164,33,Intéressant,0,0,2026-02-18,Score configurable,8
+P-0010,Pesca,Nice,06,162,32,Intéressant,0,0,2025-03-18,Score configurable,9
+P-0003,Zannier Bendor,Bandol,83,162,32,Intéressant,0,0,2025-10-31,Score configurable,10
+P-0004,Château Rose,Grimaud,83,162,32,Intéressant,0,0,2025-06-23,Score configurable,11
+P-0007,Le Paradis du Fruit,Nice,06,162,32,Intéressant,0,0,2025-03-27,Score configurable,12
+P-0027,La Sorga,Toulon,83,162,32,Intéressant,0,0,2025-06-09,Score configurable,13
+P-0025,Plagette,Saint-Aygulf,83,161,32,Intéressant,0,0,2025-03-06,Score configurable,14
+P-0023,Moelleuses et Persillées,Saint-Raphaël,83,161,32,Intéressant,0,0,2025-04-15,Score configurable,15
+P-0008,Carré d'Or,Nice,06,160,32,Intéressant,0,0,2025-03-14,Score configurable,16
+P-0005,Maison Mentone,Saint-Antonin-du-Var,83,158,32,Intéressant,0,0,2025-06-06,Score configurable,17
+P-0037,Plage Keller 2027,Antibes,06,158,32,Intéressant,0,0,2026-04-25,Score configurable,18
+P-0016,Hôtel du Mirazur,Menton,06,158,32,Intéressant,0,0,2025-05-13,Score configurable,19
+P-0033,Milady,Toulon,83,155,31,Intéressant,0,0,2024-08-20,Score configurable,20
+P-0032,Ô Cargo,Fréjus,83,155,31,Intéressant,0,0,2024-05-17,Score configurable,21
+P-0006,Le Central,Nice,06,155,31,Intéressant,0,0,2025-05-20,Score configurable,22
+P-0002,La Réserve Estérel,Saint-Raphaël,83,155,31,Intéressant,0,0,2026-04-08,Score configurable,23
+P-0031,Café Croisette,Sainte-Maxime,83,155,31,Intéressant,0,0,2024-08-07,Score configurable,24
+P-0036,Projet hôtelier Pariente Saint-Tropez,Saint-Tropez,83,155,31,Intéressant,0,0,2024-12-03,Score configurable,25
+P-0026,Dolce,Toulon,83,155,31,Intéressant,0,0,2025-06-13,Score configurable,26
+P-0009,Grand Café des Fleurs,Nice,06,152,30,Intéressant,0,0,2025-04-18,Score configurable,27
+P-0011,Fira,Nice,06,152,30,Intéressant,0,0,2025-06-18,Score configurable,28
+P-0040,Bar Gustave - Hôtel Hermitage,Monaco,MC,152,30,Intéressant,0,0,2026-01-12,Score configurable,29
+P-0029,Chez Péponne,La Londe-les-Maures,83,152,30,Intéressant,0,0,2025-06-11,Score configurable,30
+P-0041,Nouvelle concession de la plage Mala,Cap-d'Ail,06,152,30,Intéressant,0,0,2026-06-29,Score configurable,31
+P-0024,Nomadia,Sainte-Maxime,83,152,30,Intéressant,0,0,2026-04-01,Score configurable,32
+P-0030,Thomel,Toulon,83,150,30,Intéressant,0,0,2024-11-14,Score configurable,33
+P-0028,Lasagne Factory,Toulon,83,149,30,Intéressant,0,0,2025-08-01,Score configurable,34
+P-0035,La Voile d'Or,Saint-Jean-Cap-Ferrat,06,146,29,Intéressant,0,0,2026-06-01,Score configurable,35
+P-0039,Capitainerie et restaurant du port,Sainte-Maxime,83,143,29,Intéressant,0,0,2025-09-20,Score configurable,36
+P-0015,Elaïo - Le Méridien Nice,Nice,06,143,29,Intéressant,0,0,2025-06-24,Score configurable,37
+P-0042,Concessions de plage de la baie de Carnolès,Roquebrune-Cap-Martin,06,140,28,Intéressant,0,0,2026-02-09,Score configurable,38
+P-0043,Embellissement du Vieux Port de Golfe-Juan,Golfe-Juan,06,137,27,Intéressant,0,0,2026-04-13,Score configurable,39
+P-0018,Marmar,Nice,06,134,27,Intéressant,0,0,2025-02-20,Score configurable,40
+P-0019,Mallard,Nice,06,134,27,Intéressant,0,0,2025-02-20,Score configurable,41
+P-0012,African Queen Saint-Tropez,Saint-Tropez,83,132,26,Intéressant,0,0,2025-07-10,Score configurable,42
+P-0038,Hôtel Riviera - Vignette Collection,Théoule-sur-Mer,06,128,26,Intéressant,0,0,2025-11-03,Score configurable,43

@@ -1,0 +1,24 @@
+{
+  "date_utc": "2026-08-03T08:48:36Z",
+  "source": "SIRENE",
+  "nouveaux_signaux": 0,
+  "total_signaux": 0,
+  "erreurs": [
+    "06/55.10Z: 400 Client Error: Bad Request for url: https://recherche-entreprises.api.gouv.fr/search?q=&code_postal=06&code_naf=55.10Z&page=1&per_page=25",
+    "06/55.20Z: 400 Client Error: Bad Request for url: https://recherche-entreprises.api.gouv.fr/search?q=&code_postal=06&code_naf=55.20Z&page=1&per_page=25",
+    "06/55.30Z: 400 Client Error: Bad Request for url: https://recherche-entreprises.api.gouv.fr/search?q=&code_postal=06&code_naf=55.30Z&page=1&per_page=25",
+    "06/56.10A: 400 Client Error: Bad Request for url: https://recherche-entreprises.api.gouv.fr/search?q=&code_postal=06&code_naf=56.10A&page=1&per_page=25",
+    "06/56.10B: 400 Client Error: Bad Request for url: https://recherche-entreprises.api.gouv.fr/search?q=&code_postal=06&code_naf=56.10B&page=1&per_page=25",
+    "06/56.10C: 400 Client Error: Bad Request for url: https://recherche-entreprises.api.gouv.fr/search?q=&code_postal=06&code_naf=56.10C&page=1&per_page=25",
+    "06/56.21Z: 400 Client Error: Bad Request for url: https://recherche-entreprises.api.gouv.fr/search?q=&code_postal=06&code_naf=56.21Z&page=1&per_page=25",
+    "06/56.30Z: 400 Client Error: Bad Request for url: https://recherche-entreprises.api.gouv.fr/search?q=&code_postal=06&code_naf=56.30Z&page=1&per_page=25",
+    "83/55.10Z: 400 Client Error: Bad Request for url: https://recherche-entreprises.api.gouv.fr/search?q=&code_postal=83&code_naf=55.10Z&page=1&per_page=25",
+    "83/55.20Z: 400 Client Error: Bad Request for url: https://recherche-entreprises.api.gouv.fr/search?q=&code_postal=83&code_naf=55.20Z&page=1&per_page=25",
+    "83/55.30Z: 400 Client Error: Bad Request for url: https://recherche-entreprises.api.gouv.fr/search?q=&code_postal=83&code_naf=55.30Z&page=1&per_page=25",
+    "83/56.10A: 400 Client Error: Bad Request for url: https://recherche-entreprises.api.gouv.fr/search?q=&code_postal=83&code_naf=56.10A&page=1&per_page=25",
+    "83/56.10B: 400 Client Error: Bad Request for url: https://recherche-entreprises.api.gouv.fr/search?q=&code_postal=83&code_naf=56.10B&page=1&per_page=25",
+    "83/56.10C: 400 Client Error: Bad Request for url: https://recherche-entreprises.api.gouv.fr/search?q=&code_postal=83&code_naf=56.10C&page=1&per_page=25",
+    "83/56.21Z: 400 Client Error: Bad Request for url: https://recherche-entreprises.api.gouv.fr/search?q=&code_postal=83&code_naf=56.21Z&page=1&per_page=25",
+    "83/56.30Z: 400 Client Error: Bad Request for url: https://recherche-entreprises.api.gouv.fr/search?q=&code_postal=83&code_naf=56.30Z&page=1&per_page=25"
+  ]
+}
