@@ -15,20 +15,20 @@ import requests
 
 BASE = Path(__file__).resolve().parents[1]
 DATA = BASE / "data"
-SNAPSHOTS = DATA / "snapshots"
+SNAPSHOTS = DATA / "auto" / "snapshots"
 
 PROSPECTS = DATA / "prospects.csv"
 CONTACTS = DATA / "contacts.csv"
 TERRITORIES = DATA / "territoires.csv"
 QUERIES = DATA / "requetes_veille.csv"
-SIGNALS = DATA / "signaux_hebdo.csv"
-CONSOLIDATED_SIGNALS = DATA / "signaux.csv"
-NEW_SIGNALS = DATA / "nouveaux_signaux.csv"
+SIGNALS = DATA / "auto" / "signaux_hebdo.csv"
+CONSOLIDATED_SIGNALS = DATA / "auto" / "signaux.csv"
+NEW_SIGNALS = DATA / "auto" / "nouveaux_signaux.csv"
 LATEST = DATA / "dernieres_nouveautes.csv"
-METADATA = DATA / "metadonnees_application.csv"
-HISTORY = DATA / "historique_mises_a_jour.csv"
-STATE = DATA / "etat_donnees.csv"
-ZONE_STATE = DATA / "etat_zones.csv"
+METADATA = DATA / "auto" / "metadonnees_veille.csv"
+HISTORY = DATA / "auto" / "historique_veille.csv"
+STATE = DATA / "auto" / "etat_donnees_veille.csv"
+ZONE_STATE = DATA / "auto" / "etat_zones_veille.csv"
 
 NOW = datetime.now(timezone.utc).replace(microsecond=0)
 NOW_ISO = NOW.isoformat().replace("+00:00", "Z")
@@ -124,7 +124,7 @@ def merge_signals(collected: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     return merged, new
 
 def prospect_changes() -> tuple[int, int]:
-    SNAPSHOTS.mkdir(exist_ok=True)
+    SNAPSHOTS.mkdir(parents=True, exist_ok=True)
     reference = SNAPSHOTS / "prospects_reference.csv"
     current = pd.read_csv(PROSPECTS, dtype={"departement": str})
     previous = safe_read(reference, dtype={"departement": str})
@@ -157,7 +157,7 @@ def rebuild_status(new_signal_count: int, errors: list[str]) -> None:
     latest_manual_sweep = territories["derniere_recherche"].max()
 
     metadata = pd.DataFrame([
-        ["version_application", "V7.3"],
+        ["version_application", "V7.4"],
         ["date_generation_utc", NOW_ISO],
         ["actualisation_automatique", "Hebdomadaire"],
         ["dernier_passage_automatique_utc", NOW_ISO],
@@ -195,7 +195,7 @@ def append_history(new_signals: int, added: int, modified: int, errors: list[str
     history = safe_read(HISTORY)
     row = pd.DataFrame([{
         "date_utc": NOW_ISO,
-        "version": "V7.3",
+        "version": "V7.4",
         "type": "Veille hebdomadaire automatisée",
         "resultat": "Succès" if not errors else "Partiel",
         "nouveaux_prospects": added,
@@ -247,8 +247,7 @@ def main() -> None:
     added, modified = prospect_changes()
     append_history(len(new), added, modified, errors)
     rebuild_status(len(new), errors)
-    from rebuild_intelligence import rebuild as rebuild_intelligence
-    rebuild_intelligence()
+    # Curated scores and prospects remain untouched by automatic monitoring.
 
     print(
         f"Veille terminée: {len(new)} nouveaux signaux, "

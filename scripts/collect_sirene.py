@@ -10,8 +10,8 @@ BASE = Path(__file__).resolve().parents[1]
 DATA = BASE / "data"
 API = "https://recherche-entreprises.api.gouv.fr/search"
 NAF_FILE = DATA / "naf_chr.csv"
-OUTPUT = DATA / "signaux_sirene.csv"
-NEW_OUTPUT = DATA / "nouveaux_signaux_sirene.csv"
+OUTPUT = DATA / "auto" / "signaux_sirene.csv"
+NEW_OUTPUT = DATA / "auto" / "nouveaux_signaux_sirene.csv"
 
 NOW = datetime.now(timezone.utc).replace(microsecond=0)
 NOW_ISO = NOW.isoformat().replace("+00:00", "Z")

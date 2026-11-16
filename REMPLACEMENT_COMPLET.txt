@@ -1,1 +1,1 @@
-Conserver uniquement .git, supprimer le reste, copier le ZIP. Commit conseillé : V7.3 - Contacts prospects publics et sourcés
+Conserver .git uniquement. Remplacer les autres fichiers par ceux du ZIP. Commit : Radar V7.4 - prospects novembre 2026 + veille isolée
